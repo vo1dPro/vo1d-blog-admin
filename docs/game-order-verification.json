@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-09-07T09:00:22.121Z",
+  "games": 47,
+  "order": "playtimeHours descending; rating descending and title for ties",
+  "firstGames": [
+    {
+      "title": "Counter-Strike 2",
+      "hours": 1723
+    },
+    {
+      "title": "Apex Legends",
+      "hours": 1372
+    },
+    {
+      "title": "Red Dead Redemption 2",
+      "hours": 57
+    },
+    {
+      "title": "Sudoku Universe",
+      "hours": 19
+    },
+    {
+      "title": "It Takes Two",
+      "hours": 12
+    }
+  ],
+  "fullNextCycle": true,
+  "fullPreviousCycle": true,
+  "listSelectionThenNext": true,
+  "screenActuallyAwake": true,
+  "mobileOverflow": false,
+  "errors": []
+}

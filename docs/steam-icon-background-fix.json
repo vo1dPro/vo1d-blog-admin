@@ -1,0 +1,36 @@
+{
+  "status": "saved",
+  "checkedAt": "2026-09-07T03:19:48.687Z",
+  "before": {
+    "id": 9,
+    "iconMediaId": 161,
+    "darkIconMediaId": 160
+  },
+  "after": {
+    "id": 9,
+    "iconMediaId": 160,
+    "darkIconMediaId": 161
+  },
+  "onlyIconReferencesChanged": true,
+  "previewBackgroundIndependentOfAdminTheme": true,
+  "publicBrowser": {
+    "checkedAt": "2026-09-07T03:20:33.761Z",
+    "cases": [
+      {
+        "pageTheme": "dark",
+        "headerTheme": "dark",
+        "footerTheme": "light",
+        "allSocialLinks": 4,
+        "correctSource": true
+      },
+      {
+        "pageTheme": "light",
+        "headerTheme": "light",
+        "footerTheme": "dark",
+        "allSocialLinks": 4,
+        "correctSource": true
+      }
+    ],
+    "errors": []
+  }
+}

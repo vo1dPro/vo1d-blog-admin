@@ -1,0 +1,5673 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HttpOnly cookie set",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credentials are invalid"
+          }
+        },
+        "summary": "Create an administrator database session",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Session deleted and cookie cleared"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminIdentityDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/admin/media": {
+      "get": {
+        "operationId": "AdminMediaController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/media"
+        ]
+      }
+    },
+    "/admin/media/images": {
+      "post": {
+        "operationId": "AdminMediaController_upload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "enum": [
+                      "IMAGE",
+                      "PHOTO",
+                      "ICON"
+                    ],
+                    "default": "IMAGE"
+                  },
+                  "altText": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/MediaUploadResponseDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PhotoUploadResponseDto"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/media"
+        ]
+      }
+    },
+    "/admin/media/{id}": {
+      "delete": {
+        "operationId": "AdminMediaController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Unreferenced media asset deleted"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/media"
+        ]
+      }
+    },
+    "/site-profile": {
+      "get": {
+        "operationId": "SiteProfileController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "site-profile"
+        ]
+      }
+    },
+    "/admin/site-profile": {
+      "get": {
+        "operationId": "AdminSiteProfileController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSiteProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/site-profile"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminSiteProfileController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiteProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSiteProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/site-profile"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "PostgreSQL is unavailable"
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/articles": {
+      "get": {
+        "operationId": "ArticlesController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Category key",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Tag slug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive title and summary search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlePageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "articles"
+        ]
+      }
+    },
+    "/articles/{slugOrId}/related": {
+      "get": {
+        "operationId": "ArticlesController_related",
+        "parameters": [
+          {
+            "name": "slugOrId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Related articles; page=1 and pageSize=limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlePageResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Published article not found"
+          }
+        },
+        "tags": [
+          "articles"
+        ]
+      }
+    },
+    "/articles/{slugOrId}": {
+      "get": {
+        "operationId": "ArticlesController_get",
+        "parameters": [
+          {
+            "name": "slugOrId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Published article not found"
+          }
+        },
+        "tags": [
+          "articles"
+        ]
+      }
+    },
+    "/admin/articles": {
+      "get": {
+        "operationId": "AdminArticlesController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Category key",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Tag slug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive title and summary search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticlePageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/articles"
+        ]
+      },
+      "post": {
+        "operationId": "AdminArticlesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticleDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Slug already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/articles"
+        ]
+      }
+    },
+    "/admin/articles/{id}": {
+      "get": {
+        "operationId": "AdminArticlesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/articles"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminArticlesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticleDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Slug already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/articles"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminArticlesController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Article deleted"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/articles"
+        ]
+      }
+    },
+    "/categories": {
+      "get": {
+        "operationId": "CategoriesController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible article categories",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/admin/categories": {
+      "get": {
+        "operationId": "AdminCategoriesController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all categories for administration",
+        "tags": [
+          "admin/categories"
+        ]
+      },
+      "post": {
+        "operationId": "AdminCategoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "409": {
+            "description": "The category key already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a category",
+        "tags": [
+          "admin/categories"
+        ]
+      }
+    },
+    "/admin/categories/{id}": {
+      "get": {
+        "operationId": "AdminCategoriesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get a category by id",
+        "tags": [
+          "admin/categories"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminCategoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Category not found"
+          },
+          "409": {
+            "description": "The category key already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a category",
+        "tags": [
+          "admin/categories"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminCategoriesController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Category deleted"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Category not found"
+          },
+          "409": {
+            "description": "The category is referenced by an article"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete an unused category",
+        "tags": [
+          "admin/categories"
+        ]
+      }
+    },
+    "/admin/categories/reorder": {
+      "patch": {
+        "operationId": "AdminCategoriesController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Display positions updated atomically"
+          },
+          "400": {
+            "description": "The reorder payload is invalid"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "A category id was not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update category sort positions in one transaction",
+        "tags": [
+          "admin/categories"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "TagsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List tags used by currently published articles",
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/admin/tags": {
+      "get": {
+        "operationId": "AdminTagsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all tags for administration",
+        "tags": [
+          "admin/tags"
+        ]
+      },
+      "post": {
+        "operationId": "AdminTagsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "409": {
+            "description": "The tag slug or name already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a tag",
+        "tags": [
+          "admin/tags"
+        ]
+      }
+    },
+    "/admin/tags/{id}": {
+      "get": {
+        "operationId": "AdminTagsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get a tag by id",
+        "tags": [
+          "admin/tags"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminTagsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Tag not found"
+          },
+          "409": {
+            "description": "The tag slug or name already exists"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a tag",
+        "tags": [
+          "admin/tags"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminTagsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tag deleted"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a tag and its article associations",
+        "tags": [
+          "admin/tags"
+        ]
+      }
+    },
+    "/books": {
+      "get": {
+        "operationId": "BooksController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible books in display order",
+        "tags": [
+          "books"
+        ]
+      }
+    },
+    "/admin/books": {
+      "get": {
+        "operationId": "AdminBooksController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all books, including hidden records",
+        "tags": [
+          "admin/books"
+        ]
+      },
+      "post": {
+        "operationId": "AdminBooksController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or cover media kind is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Cover media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a book",
+        "tags": [
+          "admin/books"
+        ]
+      }
+    },
+    "/admin/books/reorder": {
+      "patch": {
+        "operationId": "AdminBooksController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Book display positions updated"
+          },
+          "400": {
+            "description": "Duplicate IDs or display positions"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "At least one book does not exist"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Atomically update book display positions",
+        "tags": [
+          "admin/books"
+        ]
+      }
+    },
+    "/admin/books/{id}": {
+      "get": {
+        "operationId": "AdminBooksController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get one book for administration",
+        "tags": [
+          "admin/books"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminBooksController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or cover media kind is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Book or cover media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a book",
+        "tags": [
+          "admin/books"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminBooksController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Book deleted"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a book",
+        "tags": [
+          "admin/books"
+        ]
+      }
+    },
+    "/games": {
+      "get": {
+        "operationId": "GamesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible games in display order",
+        "tags": [
+          "games"
+        ]
+      }
+    },
+    "/admin/games": {
+      "get": {
+        "operationId": "AdminGamesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all games, including hidden records",
+        "tags": [
+          "admin/games"
+        ]
+      },
+      "post": {
+        "operationId": "AdminGamesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGameDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or cover media kind is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Cover media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a game",
+        "tags": [
+          "admin/games"
+        ]
+      }
+    },
+    "/admin/games/reorder": {
+      "patch": {
+        "operationId": "AdminGamesController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Game display positions updated"
+          },
+          "400": {
+            "description": "Duplicate IDs or display positions"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "At least one game does not exist"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Atomically update game display positions",
+        "tags": [
+          "admin/games"
+        ]
+      }
+    },
+    "/admin/games/{id}": {
+      "get": {
+        "operationId": "AdminGamesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Game not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get one game for administration",
+        "tags": [
+          "admin/games"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminGamesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGameDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or cover media kind is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Game or cover media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a game",
+        "tags": [
+          "admin/games"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminGamesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Game deleted"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Game not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a game",
+        "tags": [
+          "admin/games"
+        ]
+      }
+    },
+    "/admin/steam/status": {
+      "get": {
+        "operationId": "SteamController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamStatusDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/steam"
+        ]
+      }
+    },
+    "/admin/steam/library": {
+      "get": {
+        "operationId": "SteamController_library",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamLibraryPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "tags": [
+          "admin/steam"
+        ]
+      }
+    },
+    "/admin/steam/sync": {
+      "post": {
+        "operationId": "SteamController_sync",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamStatusDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Sync configured owner library; durable cooldown also applies to manual sync",
+        "tags": [
+          "admin/steam"
+        ]
+      }
+    },
+    "/admin/steam/link-matches": {
+      "post": {
+        "operationId": "SteamController_link",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamLinkResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Link only unique exact normalized titles; preserve existing links and editorial fields",
+        "tags": [
+          "admin/steam"
+        ]
+      }
+    },
+    "/photos": {
+      "get": {
+        "operationId": "PhotosController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible photos in display order",
+        "tags": [
+          "photos"
+        ]
+      }
+    },
+    "/admin/photos": {
+      "get": {
+        "operationId": "AdminPhotosController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all photos, including hidden records",
+        "tags": [
+          "admin/photos"
+        ]
+      },
+      "post": {
+        "operationId": "AdminPhotosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhotoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or media relationship is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Original or thumbnail media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a photo",
+        "tags": [
+          "admin/photos"
+        ]
+      }
+    },
+    "/admin/photos/reorder": {
+      "patch": {
+        "operationId": "AdminPhotosController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Photo display positions updated"
+          },
+          "400": {
+            "description": "Duplicate IDs or display positions"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "At least one photo does not exist"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Atomically update photo display positions",
+        "tags": [
+          "admin/photos"
+        ]
+      }
+    },
+    "/admin/photos/{id}": {
+      "get": {
+        "operationId": "AdminPhotosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Photo not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get one photo for administration",
+        "tags": [
+          "admin/photos"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminPhotosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePhotoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input or media relationship is invalid"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Photo or media asset not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a photo",
+        "tags": [
+          "admin/photos"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminPhotosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Photo deleted"
+          },
+          "401": {
+            "description": "A valid administrator session is required"
+          },
+          "404": {
+            "description": "Photo not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a photo",
+        "tags": [
+          "admin/photos"
+        ]
+      }
+    },
+    "/skills": {
+      "get": {
+        "operationId": "SkillsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible skills",
+        "tags": [
+          "skills"
+        ]
+      }
+    },
+    "/admin/skills": {
+      "get": {
+        "operationId": "AdminSkillsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all skills for administration",
+        "tags": [
+          "admin/skills"
+        ]
+      },
+      "post": {
+        "operationId": "AdminSkillsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a skill",
+        "tags": [
+          "admin/skills"
+        ]
+      }
+    },
+    "/admin/skills/{id}": {
+      "get": {
+        "operationId": "AdminSkillsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Skill not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get a skill by id",
+        "tags": [
+          "admin/skills"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminSkillsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Skill not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a skill",
+        "tags": [
+          "admin/skills"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminSkillsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Skill deleted"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Skill not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a skill",
+        "tags": [
+          "admin/skills"
+        ]
+      }
+    },
+    "/admin/skills/reorder": {
+      "patch": {
+        "operationId": "AdminSkillsController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Display positions updated atomically"
+          },
+          "400": {
+            "description": "The reorder payload is invalid"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "A skill id was not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update skill sort positions in one transaction",
+        "tags": [
+          "admin/skills"
+        ]
+      }
+    },
+    "/social-links": {
+      "get": {
+        "operationId": "SocialLinksController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialLinkPageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List visible social links",
+        "tags": [
+          "social-links"
+        ]
+      }
+    },
+    "/admin/social-links": {
+      "get": {
+        "operationId": "AdminSocialLinksController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialLinkPageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List all social links for administration",
+        "tags": [
+          "admin/social-links"
+        ]
+      },
+      "post": {
+        "operationId": "AdminSocialLinksController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSocialLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialLinkResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a social link",
+        "tags": [
+          "admin/social-links"
+        ]
+      }
+    },
+    "/admin/social-links/{id}": {
+      "get": {
+        "operationId": "AdminSocialLinksController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialLinkResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Social link not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get a social link by id",
+        "tags": [
+          "admin/social-links"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminSocialLinksController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSocialLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialLinkResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Social link not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update a social link",
+        "tags": [
+          "admin/social-links"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminSocialLinksController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Social link deleted"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "Social link not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Delete a social link",
+        "tags": [
+          "admin/social-links"
+        ]
+      }
+    },
+    "/admin/social-links/reorder": {
+      "patch": {
+        "operationId": "AdminSocialLinksController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Display positions updated atomically"
+          },
+          "400": {
+            "description": "The reorder payload is invalid"
+          },
+          "401": {
+            "description": "Administrator session is missing or expired"
+          },
+          "404": {
+            "description": "A social-link id was not found"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update social-link sort positions in one transaction",
+        "tags": [
+          "admin/social-links"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "vo1d-blog API",
+    "description": "Public content and database-session administration. Writes require an allowed Origin. Login sets an HttpOnly cookie; use credentials: include.",
+    "version": "",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vo1d_admin_session",
+        "description": "HttpOnly cookie set by POST /auth/login"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 256,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AdminIdentityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "id",
+          "email"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "admin": {
+            "$ref": "#/components/schemas/AdminIdentityDto"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "admin",
+          "expiresAt"
+        ]
+      },
+      "MediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          },
+          "altText": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "PHOTO_ORIGINAL",
+              "PHOTO_THUMBNAIL"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "mimeType",
+          "sizeBytes",
+          "width",
+          "height",
+          "altText",
+          "kind",
+          "createdAt"
+        ]
+      },
+      "MediaUploadResponseDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          }
+        },
+        "required": [
+          "asset"
+        ]
+      },
+      "PhotoUploadResponseDto": {
+        "type": "object",
+        "properties": {
+          "original": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          },
+          "thumbnail": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          }
+        },
+        "required": [
+          "original",
+          "thumbnail"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "MediaPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaResponseDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total",
+          "totalPages",
+          "items"
+        ]
+      },
+      "SiteProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "heroTitlePrefix": {
+            "type": "string"
+          },
+          "heroDescription": {
+            "type": "string"
+          },
+          "learningNote": {
+            "type": "string"
+          },
+          "footerMessage": {
+            "type": "string"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "displayName",
+          "role",
+          "heroTitlePrefix",
+          "heroDescription",
+          "learningNote",
+          "footerMessage",
+          "avatar",
+          "updatedAt"
+        ]
+      },
+      "AdminSiteProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "heroTitlePrefix": {
+            "type": "string"
+          },
+          "heroDescription": {
+            "type": "string"
+          },
+          "learningNote": {
+            "type": "string"
+          },
+          "footerMessage": {
+            "type": "string"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "avatarMediaId": {
+            "type": "number",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "displayName",
+          "role",
+          "heroTitlePrefix",
+          "heroDescription",
+          "learningNote",
+          "footerMessage",
+          "avatar",
+          "updatedAt",
+          "id",
+          "avatarMediaId",
+          "createdAt"
+        ]
+      },
+      "UpdateSiteProfileDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "heroTitlePrefix": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "heroDescription": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "learningNote": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "footerMessage": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "avatarMediaId": {
+            "type": "object",
+            "nullable": true,
+            "minimum": 1
+          }
+        }
+      },
+      "HealthResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "up"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "status",
+          "database",
+          "timestamp"
+        ]
+      },
+      "ArticleCategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "key": {
+            "type": "string",
+            "example": "backend"
+          },
+          "label": {
+            "type": "string",
+            "example": "Backend"
+          },
+          "iconKey": {
+            "type": "object",
+            "example": "Server",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "label"
+        ]
+      },
+      "ArticleTagDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "slug": {
+            "type": "string",
+            "example": "typescript"
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeScript"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ]
+      },
+      "ArticleSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ArticleCategoryDto"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleTagDto"
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          },
+          "readingTimeMinutes": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "summary",
+          "category",
+          "tags",
+          "publishedAt",
+          "cover",
+          "readingTimeMinutes"
+        ]
+      },
+      "ArticlePageResponseDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total",
+          "totalPages",
+          "items"
+        ]
+      },
+      "TocItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "level": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 6
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "level"
+        ]
+      },
+      "ArticleDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ArticleCategoryDto"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleTagDto"
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          },
+          "readingTimeMinutes": {
+            "type": "number",
+            "minimum": 1
+          },
+          "contentHtml": {
+            "type": "string",
+            "description": "Sanitized HTML; raw HTML in Markdown is escaped"
+          },
+          "toc": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TocItemDto"
+            }
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "summary",
+          "category",
+          "tags",
+          "publishedAt",
+          "cover",
+          "readingTimeMinutes",
+          "contentHtml",
+          "toc",
+          "seoTitle",
+          "seoDescription"
+        ]
+      },
+      "CategoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "key": {
+            "type": "string",
+            "example": "backend"
+          },
+          "label": {
+            "type": "string",
+            "example": "Backend"
+          },
+          "iconKey": {
+            "type": "object",
+            "example": "Server",
+            "nullable": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "label",
+          "sortOrder",
+          "isVisible",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TagResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "slug": {
+            "type": "string",
+            "example": "typescript"
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeScript"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AdminArticleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/MediaResponseDto"
+          },
+          "readingTimeMinutes": {
+            "type": "number",
+            "minimum": 1
+          },
+          "publishedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "bodyMarkdown": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "number"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryResponseDto"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponseDto"
+            }
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "coverMediaId": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "summary",
+          "cover",
+          "readingTimeMinutes",
+          "publishedAt",
+          "bodyMarkdown",
+          "categoryId",
+          "category",
+          "tags",
+          "tagIds",
+          "coverMediaId",
+          "status",
+          "seoTitle",
+          "seoDescription",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AdminArticlePageDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminArticleDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total",
+          "totalPages",
+          "items"
+        ]
+      },
+      "CreateArticleDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "typescript-type-system-2"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "bodyMarkdown": {
+            "type": "string",
+            "description": "Trusted article source in Markdown, never returned publicly"
+          },
+          "categoryId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT"
+          },
+          "publishedAt": {
+            "type": "object",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "readingTimeMinutes": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1440
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "tagIds": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "summary",
+          "bodyMarkdown",
+          "categoryId",
+          "coverMediaId",
+          "readingTimeMinutes",
+          "tagIds"
+        ]
+      },
+      "UpdateArticleDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "typescript-type-system-2"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "bodyMarkdown": {
+            "type": "string",
+            "description": "Trusted article source in Markdown, never returned publicly"
+          },
+          "categoryId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT"
+          },
+          "publishedAt": {
+            "type": "object",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "readingTimeMinutes": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1440
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "tagIds": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "CategoryPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "backend",
+            "maxLength": 100
+          },
+          "label": {
+            "type": "string",
+            "example": "Backend",
+            "maxLength": 200
+          },
+          "iconKey": {
+            "type": "object",
+            "example": "Server",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ]
+      },
+      "ReorderItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "sortOrder"
+        ]
+      },
+      "ReorderDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReorderItemDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "backend",
+            "maxLength": 100
+          },
+          "label": {
+            "type": "string",
+            "example": "Backend",
+            "maxLength": 200
+          },
+          "iconKey": {
+            "type": "object",
+            "example": "Server",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "TagPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "typescript",
+            "maxLength": 100
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeScript",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "slug",
+          "name"
+        ]
+      },
+      "UpdateTagDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "typescript",
+            "maxLength": 100
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeScript",
+            "maxLength": 100
+          }
+        }
+      },
+      "BookMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          },
+          "altText": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "PHOTO_ORIGINAL",
+              "PHOTO_THUMBNAIL"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "mimeType",
+          "sizeBytes",
+          "width",
+          "height",
+          "altText",
+          "kind",
+          "createdAt"
+        ]
+      },
+      "BookResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "coverMediaId": {
+            "type": "number"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/BookMediaResponseDto"
+          },
+          "accent": {
+            "type": "string"
+          },
+          "sourceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "readingOrder": {
+            "type": "number"
+          },
+          "lastReadAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "progress": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "author",
+          "coverMediaId",
+          "cover",
+          "accent",
+          "sourceName",
+          "sourceUrl",
+          "readingOrder",
+          "lastReadAt",
+          "startedAt",
+          "finishedAt",
+          "progress",
+          "isVisible",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "BookPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateBookDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "accent": {
+            "type": "string",
+            "example": "#d7a536"
+          },
+          "sourceName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "sourceUrl": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://example.com/book"
+          },
+          "readingOrder": {
+            "type": "number",
+            "minimum": 1
+          },
+          "lastReadAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "progress": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title",
+          "author",
+          "coverMediaId",
+          "accent",
+          "readingOrder"
+        ]
+      },
+      "UpdateBookDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "accent": {
+            "type": "string",
+            "example": "#d7a536"
+          },
+          "sourceName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "sourceUrl": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://example.com/book"
+          },
+          "readingOrder": {
+            "type": "number",
+            "minimum": 1
+          },
+          "lastReadAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "progress": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      },
+      "SteamAccountPlaytimeDto": {
+        "type": "object",
+        "properties": {
+          "accountName": {
+            "type": "string"
+          },
+          "playtimeMinutes": {
+            "type": "number",
+            "minimum": 0
+          },
+          "stale": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "accountName",
+          "playtimeMinutes",
+          "stale"
+        ]
+      },
+      "SteamGameDto": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "playtimeMinutes": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Exact Steam total, in minutes"
+          },
+          "playtimeTwoWeeksMinutes": {
+            "type": "number",
+            "nullable": true
+          },
+          "lastPlayedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "syncedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stale": {
+            "type": "boolean"
+          },
+          "incomplete": {
+            "type": "boolean",
+            "description": "One or more configured accounts have no visible snapshot"
+          },
+          "accountBreakdown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SteamAccountPlaytimeDto"
+            }
+          },
+          "storeUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "appId",
+          "name",
+          "playtimeMinutes",
+          "playtimeTwoWeeksMinutes",
+          "lastPlayedAt",
+          "syncedAt",
+          "stale",
+          "incomplete",
+          "accountBreakdown",
+          "storeUrl"
+        ]
+      },
+      "GameMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          },
+          "altText": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "PHOTO_ORIGINAL",
+              "PHOTO_THUMBNAIL"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "mimeType",
+          "sizeBytes",
+          "width",
+          "height",
+          "altText",
+          "kind",
+          "createdAt"
+        ]
+      },
+      "GameResponseDto": {
+        "type": "object",
+        "properties": {
+          "steamAppId": {
+            "type": "number",
+            "nullable": true
+          },
+          "steam": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SteamGameDto"
+              }
+            ]
+          },
+          "manualPlaytimeHours": {
+            "type": "number",
+            "description": "Stored manual hours, preserved when Steam is linked"
+          },
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverMediaId": {
+            "type": "number"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/GameMediaResponseDto"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "playtimeHours": {
+            "type": "number",
+            "minimum": 0
+          },
+          "likeLevel": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "steamAppId",
+          "steam",
+          "manualPlaytimeHours",
+          "id",
+          "title",
+          "platform",
+          "coverMediaId",
+          "cover",
+          "rating",
+          "playtimeHours",
+          "likeLevel",
+          "comment",
+          "isVisible",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GamePageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateGameDto": {
+        "type": "object",
+        "properties": {
+          "steamAppId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1,
+            "description": "App ID from the configured owner Steam library; null unlinks"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "platform": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "example": 8.5
+          },
+          "playtimeHours": {
+            "type": "number",
+            "minimum": 0
+          },
+          "likeLevel": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 5000
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title",
+          "coverMediaId",
+          "rating",
+          "playtimeHours",
+          "likeLevel"
+        ]
+      },
+      "UpdateGameDto": {
+        "type": "object",
+        "properties": {
+          "steamAppId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1,
+            "description": "App ID from the configured owner Steam library; null unlinks"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "platform": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "coverMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "example": 8.5
+          },
+          "playtimeHours": {
+            "type": "number",
+            "minimum": 0
+          },
+          "likeLevel": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 5000
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      },
+      "SteamAccountStatusDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "steamId": {
+            "type": "string"
+          },
+          "syncing": {
+            "type": "boolean"
+          },
+          "libraryVisible": {
+            "type": "boolean"
+          },
+          "gameCount": {
+            "type": "number"
+          },
+          "lastSuccessAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "nextSyncAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastErrorCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "steamId",
+          "syncing",
+          "libraryVisible",
+          "gameCount",
+          "lastSuccessAt",
+          "nextSyncAt",
+          "lastErrorCode"
+        ]
+      },
+      "SteamStatusDto": {
+        "type": "object",
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SteamAccountStatusDto"
+            }
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "steamId": {
+            "type": "string",
+            "nullable": true
+          },
+          "intervalSeconds": {
+            "type": "number"
+          },
+          "syncing": {
+            "type": "boolean"
+          },
+          "libraryVisible": {
+            "type": "boolean"
+          },
+          "gameCount": {
+            "type": "number"
+          },
+          "lastSuccessAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "nextSyncAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "lastErrorCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "accounts",
+          "enabled",
+          "steamId",
+          "intervalSeconds",
+          "syncing",
+          "libraryVisible",
+          "gameCount",
+          "lastSuccessAt",
+          "nextSyncAt",
+          "lastErrorCode"
+        ]
+      },
+      "SteamLibraryPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SteamGameDto"
+            }
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "SteamLinkResultDto": {
+        "type": "object",
+        "properties": {
+          "linkedGameIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "linkedGameIds"
+        ]
+      },
+      "PhotoMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          },
+          "altText": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "PHOTO_ORIGINAL",
+              "PHOTO_THUMBNAIL"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "mimeType",
+          "sizeBytes",
+          "width",
+          "height",
+          "altText",
+          "kind",
+          "createdAt"
+        ]
+      },
+      "PhotoResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "originalMediaId": {
+            "type": "number"
+          },
+          "original": {
+            "$ref": "#/components/schemas/PhotoMediaResponseDto"
+          },
+          "thumbnailMediaId": {
+            "type": "number"
+          },
+          "thumbnail": {
+            "$ref": "#/components/schemas/PhotoMediaResponseDto"
+          },
+          "alt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "capturedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "originalMediaId",
+          "original",
+          "thumbnailMediaId",
+          "thumbnail",
+          "alt",
+          "title",
+          "description",
+          "capturedAt",
+          "isVisible",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PhotoPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreatePhotoDto": {
+        "type": "object",
+        "properties": {
+          "originalMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "thumbnailMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "capturedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "originalMediaId",
+          "thumbnailMediaId",
+          "alt",
+          "title",
+          "description"
+        ]
+      },
+      "UpdatePhotoDto": {
+        "type": "object",
+        "properties": {
+          "originalMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "thumbnailMediaId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "capturedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      },
+      "SkillResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "TypeScript"
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "typescript"
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true
+          },
+          "icon": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "darkIcon": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "iconKey",
+          "iconMediaId",
+          "darkIconMediaId",
+          "icon",
+          "darkIcon",
+          "sortOrder",
+          "isVisible",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "SkillPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateSkillDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "TypeScript",
+            "maxLength": 200
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "typescript",
+            "maxLength": 100
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "iconKey"
+        ]
+      },
+      "UpdateSkillDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "TypeScript",
+            "maxLength": 200
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "typescript",
+            "maxLength": 100
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "SocialLinkResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "GitHub"
+          },
+          "platform": {
+            "type": "string",
+            "example": "github"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://github.com/vo1dPro",
+            "format": "uri"
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "github"
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true
+          },
+          "icon": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "darkIcon": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaResponseDto"
+              }
+            ]
+          },
+          "sortOrder": {
+            "type": "number",
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "platform",
+          "url",
+          "iconKey",
+          "iconMediaId",
+          "darkIconMediaId",
+          "icon",
+          "darkIcon",
+          "sortOrder",
+          "isVisible",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "SocialLinkPageResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialLinkResponseDto"
+            }
+          },
+          "page": {
+            "type": "number",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "number",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total",
+          "totalPages"
+        ]
+      },
+      "CreateSocialLinkDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "GitHub",
+            "maxLength": 200
+          },
+          "platform": {
+            "type": "string",
+            "example": "github",
+            "maxLength": 100
+          },
+          "url": {
+            "type": "string",
+            "example": "https://github.com/vo1dPro",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "github",
+            "maxLength": 100
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "platform",
+          "url",
+          "iconKey"
+        ]
+      },
+      "UpdateSocialLinkDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "GitHub",
+            "maxLength": 200
+          },
+          "platform": {
+            "type": "string",
+            "example": "github",
+            "maxLength": 100
+          },
+          "url": {
+            "type": "string",
+            "example": "https://github.com/vo1dPro",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "iconKey": {
+            "type": "string",
+            "example": "github",
+            "maxLength": 100
+          },
+          "iconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "darkIconMediaId": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    }
+  }
+}

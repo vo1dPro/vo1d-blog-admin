@@ -1,0 +1,63 @@
+{
+  "base": "http://localhost:3100",
+  "counts": {
+    "articles": 6,
+    "categories": 6,
+    "tags": 11,
+    "books": 4,
+    "games": 47,
+    "photos": 10,
+    "skills": 24,
+    "social-links": 3,
+    "media": 110
+  },
+  "steamLibraryCount": 103,
+  "steamStatus": {
+    "enabled": true,
+    "steamId": null,
+    "accounts": [
+      {
+        "name": "vo1d",
+        "steamId": "76561199261096623",
+        "syncing": false,
+        "libraryVisible": true,
+        "gameCount": 54,
+        "lastSuccessAt": "2026-09-07T02:38:02.872Z",
+        "nextSyncAt": "2026-09-07T02:43:02.872Z",
+        "lastErrorCode": null
+      },
+      {
+        "name": "vo2d",
+        "steamId": "76561199252540543",
+        "syncing": false,
+        "libraryVisible": true,
+        "gameCount": 22,
+        "lastSuccessAt": "2026-09-07T02:38:02.165Z",
+        "nextSyncAt": "2026-09-07T02:43:02.165Z",
+        "lastErrorCode": null
+      },
+      {
+        "name": "vo3d",
+        "steamId": "76561199373637564",
+        "syncing": false,
+        "libraryVisible": true,
+        "gameCount": 36,
+        "lastSuccessAt": "2026-09-07T02:38:02.124Z",
+        "nextSyncAt": "2026-09-07T02:43:02.124Z",
+        "lastErrorCode": null
+      }
+    ],
+    "intervalSeconds": 300,
+    "syncing": false,
+    "libraryVisible": true,
+    "gameCount": 103,
+    "lastSuccessAt": "2026-09-07T02:38:02.124Z",
+    "nextSyncAt": "2026-09-07T02:43:02.124Z",
+    "lastErrorCode": null
+  },
+  "linkedTemporaryGame": true,
+  "consoleErrors": [],
+  "verifiedAt": "2026-09-07T02:41:15.302Z",
+  "cleanup": "all temporary content and media removed; original IDs and game writable fields unchanged",
+  "sessionExpiryAndLogout": "passed"
+}
