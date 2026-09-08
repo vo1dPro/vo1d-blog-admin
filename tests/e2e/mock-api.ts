@@ -30,7 +30,7 @@ export const game = {
   coverMediaId: 1,
   cover: medium,
   rating: 0,
-  playtimeHours: 100,
+  playtimeHours: 7,
   manualPlaytimeHours: 7,
   likeLevel: 0,
   comment: null,

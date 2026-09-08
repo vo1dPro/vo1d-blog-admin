@@ -180,6 +180,8 @@ test('照片失败与重试、深浅色图标和游戏时长保持真实接口�
   const social = (await (await page.request.get(base + '/social-links?pageSize=1')).json()) as {
     items: { icon: { url: string }; darkIcon: { url: string } }[];
   };
+  const firstSocial = social.items[0];
+  if (!firstSocial) throw new Error('Expected a public social link');
   for (const theme of ['light', 'dark']) {
     await page.evaluate((value) => {
       document.documentElement.classList.remove('light', 'dark');
@@ -192,20 +194,114 @@ test('照片失败与重试、深浅色图标和游戏时长保持真实接口�
     await expect(icon).toBeVisible();
     await expect(icon).toHaveAttribute(
       'src',
-      theme === 'dark' ? social.items[0].darkIcon.url : social.items[0].icon.url,
+      theme === 'dark' ? firstSocial.darkIcon.url : firstSocial.icon.url,
     );
   }
   const games = (await (await page.request.get(base + '/games?pageSize=50')).json()) as {
-    items: { title: string; playtimeHours: number; steam: { playtimeMinutes: number } | null }[];
+    items: {
+      title: string;
+      rating: number;
+      playtimeHours: number;
+      manualPlaytimeHours: number;
+      steam: { playtimeMinutes: number } | null;
+    }[];
   };
+  const [firstGame, secondGame] = [...games.items].sort(
+    (a, b) =>
+      b.playtimeHours - a.playtimeHours ||
+      b.rating - a.rating ||
+      a.title.localeCompare(b.title, 'zh-Hans-CN'),
+  );
+  if (!firstGame || !secondGame) throw new Error('Expected two public games');
   for (const game of games.items)
-    if (game.steam) expect(game.playtimeHours).toBe(Math.floor(game.steam.playtimeMinutes / 60));
+    expect(game.playtimeHours).toBe(
+      game.manualPlaytimeHours > 0
+        ? game.manualPlaytimeHours
+        : Math.floor((game.steam?.playtimeMinutes ?? 0) / 60),
+    );
   await page.locator('.game-showcase').scrollIntoViewIfNeeded();
   await page.getByRole('button', { name: 'Turn screen on', exact: true }).click();
-  await expect(page.locator('.game-track-title').first()).toHaveText(games.items[0].title);
+  await expect(page.locator('.game-track-title').first()).toHaveText(firstGame.title);
   await page.getByRole('button', { name: 'Next game', exact: true }).click();
-  await expect(page.locator('.game-track-title').first()).toHaveText(games.items[1].title);
+  await expect(page.locator('.game-track-title').first()).toHaveText(secondGame.title);
   await page.getByRole('button', { name: 'Previous game', exact: true }).click();
-  await expect(page.locator('.game-track-title').first()).toHaveText(games.items[0].title);
+  await expect(page.locator('.game-track-title').first()).toHaveText(firstGame.title);
+  expect(errors).toEqual([]);
+});
+
+test('游戏列表和上一首、下一首共用时长降序，支持点击选择及首尾循环', async ({ page }) => {
+  const response = (await (await page.request.get(base + '/games?pageSize=1')).json()) as {
+    items: Record<string, unknown>[];
+  };
+  const sample = response.items[0];
+  if (!sample) throw new Error('Expected a game cover fixture');
+  const items = [
+    {
+      ...sample,
+      id: 101,
+      title: 'Alpha zero',
+      playtimeHours: 0,
+      manualPlaytimeHours: 999,
+      rating: 5,
+      steam: null,
+    },
+    {
+      ...sample,
+      id: 102,
+      title: 'Beta middle',
+      playtimeHours: 60,
+      manualPlaytimeHours: 999,
+      rating: 5,
+      steam: null,
+    },
+    {
+      ...sample,
+      id: 103,
+      title: 'Zeta longest',
+      playtimeHours: 120,
+      manualPlaytimeHours: 0,
+      rating: 0,
+      steam: null,
+    },
+  ];
+  await page.route(base + '/games?*', (route) =>
+    route.fulfill({
+      json: { items, page: 1, pageSize: 50, total: items.length, totalPages: 1 },
+    }),
+  );
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const viewport of [
+    { width: 1440, height: 1000 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto(blog);
+    await page.locator('.game-showcase').scrollIntoViewIfNeeded();
+    await page.getByRole('button', { name: 'Turn screen on', exact: true }).click();
+    const title = page.locator('.game-track-title').first();
+    const next = page.getByRole('button', { name: 'Next game', exact: true });
+    const previous = page.getByRole('button', { name: 'Previous game', exact: true });
+    await expect(title).toHaveText('Zeta longest');
+    await expect(page.locator('.game-time-row span').last()).toHaveText('180h');
+    await next.click();
+    await expect(title).toHaveText('Beta middle');
+    await next.click();
+    await expect(title).toHaveText('Alpha zero');
+    await next.click();
+    await expect(title).toHaveText('Zeta longest');
+    await previous.click();
+    await expect(title).toHaveText('Alpha zero');
+    await page.getByRole('button', { name: 'Show game list', exact: true }).click();
+    await expect(page.locator('.game-library-row strong')).toHaveText([
+      'Zeta longest',
+      'Beta middle',
+    ]);
+    await page.locator('.game-library-row').filter({ hasText: 'Zeta longest' }).click();
+    await next.click();
+    await expect(title).toHaveText('Beta middle');
+    await previous.click();
+    await expect(title).toHaveText('Zeta longest');
+  }
   expect(errors).toEqual([]);
 });

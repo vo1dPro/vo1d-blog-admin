@@ -1,3 +1,5 @@
+> 历史记录：目录、数据数量和验收结论对应当时版本。当前启动、归档源及验收请以 [2026-09-08 联动记录](current-integration.md) 为准。
+
 # 图标管理与多 Steam 账号
 
 更新日期：2026-09-07。启动端口仍是博客 5173、后台 5174、后端 3100。
@@ -17,11 +19,11 @@
 新环境在完成基础内容导入后，于后端目录执行：
 
 ```powershell
-Set-Location D:\Code_Project\vo1d-blog-api
+Set-Location ..\vo1d-blog-api
 pnpm prisma:generate
 pnpm prisma:migrate:deploy
-pnpm import:icons -- --source "D:\Code_Project\vo1d-blog" --check
-pnpm import:icons -- --source "D:\Code_Project\vo1d-blog"
+pnpm import:icons -- --source "..\vo1d-blog" --check
+pnpm import:icons -- --source "..\vo1d-blog"
 ```
 
 `import:icons` 只补充现有记录的空图标关联，不重建内容，不改名称、排序、可见性，也不替换自定义图标。可重复执行；不要以 `import:frontend` 代替图标迁移。

@@ -282,7 +282,7 @@ export function SteamPage() {
       {confirm && (
         <ConfirmDialog
           title="执行唯一同名关联？"
-          message="仅关联唯一的规范化同名项，不覆盖已有链接，也不会自动发布全部 Steam 游戏。个人评分、评论、封面和手工时长保持独立。"
+          message="仅关联唯一的规范化同名项，不覆盖已有链接，也不会自动发布全部 Steam 游戏。个人评分、评论、封面和自定义时长保持独立。"
           onCancel={() => setConfirm(false)}
           onConfirm={() => link.mutate()}
           busy={link.isPending}

@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-09-07T02:43:28.901Z",
+  "checkedAt": "2026-09-08T01:42:40.210Z",
   "checks": [
     "site profile UI save -> all public placements, avatar, no visitor cookie",
     "book UI create/edit/replace/hide, nullable dates/source, zero progress, real reorder 204",
-    "photo original/thumbnail replacement updates open dialog; hide and delete close it and restore focus",
-    "draft/publish/withdraw/archive/hidden category, numeric+slug URLs, sanitized HTML, TOC, related, 7 real rows pagination and history",
+    "photo original/thumbnail replacement, dialog and Escape, hide/delete after refresh",
+    "draft/publish/withdraw/archive/hidden category, numeric+slug URLs, sanitized HTML, TOC, related, 52 real rows across API pages, existing tag filter, scheduled publication",
     "desktop/mobile light/dark without overflow or browser exceptions"
   ],
   "errors": [],

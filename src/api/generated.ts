@@ -1208,7 +1208,7 @@ export interface components {
         GameResponseDto: {
             steamAppId: number | null;
             steam: components["schemas"]["SteamGameDto"] | null;
-            /** @description Stored manual hours, preserved when Steam is linked */
+            /** @description Custom hours: positive values override Steam; 0 uses Steam. Legacy field name retained for compatibility. */
             manualPlaytimeHours: number;
             id: number;
             title: string;
@@ -1216,6 +1216,7 @@ export interface components {
             coverMediaId: number;
             cover: components["schemas"]["GameMediaResponseDto"];
             rating: number;
+            /** @description Effective display hours: custom hours when positive, otherwise aggregated Steam minutes rounded down to hours, or 0 when unavailable. Never add custom and Steam hours. */
             playtimeHours: number;
             likeLevel: number;
             comment: string | null;
@@ -1241,6 +1242,7 @@ export interface components {
             coverMediaId: number;
             /** @example 8.5 */
             rating: number;
+            /** @description Custom hours: positive values override Steam; 0 uses Steam hours. */
             playtimeHours: number;
             likeLevel: number;
             comment?: string | null;
@@ -1257,6 +1259,7 @@ export interface components {
             coverMediaId?: number;
             /** @example 8.5 */
             rating?: number;
+            /** @description Custom hours: positive values override Steam; 0 uses Steam hours. */
             playtimeHours?: number;
             likeLevel?: number;
             comment?: string | null;

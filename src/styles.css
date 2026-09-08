@@ -1085,8 +1085,8 @@ td .actions {
 }
 .media-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
 }
 .media-card {
   padding: 0;
@@ -1095,24 +1095,28 @@ td .actions {
 }
 .media-card > a {
   display: block;
-  height: 180px;
+  height: 112px;
   background: var(--hover);
 }
 .media-card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 8px;
 }
 .media-card > div {
-  padding: 16px;
+  padding: 10px;
 }
 .media-card strong {
-  font-size: 13px;
+  font-size: 12px;
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 6px;
+}
+.media-card .badge {
+  font-size: 10px;
 }
 .media-card p {
-  margin: 10px 0;
+  margin: 6px 0;
   font-size: 12px;
   overflow: hidden;
   white-space: nowrap;
@@ -1120,7 +1124,8 @@ td .actions {
 }
 .media-card small {
   display: block;
-  margin-bottom: 14px;
+  font-size: 11px;
+  margin-bottom: 8px;
 }
 .media-card button {
   font-size: 11px;
@@ -1432,9 +1437,6 @@ dialog > p {
   .title-cell strong {
     max-width: 250px;
   }
-  .media-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .login-intro {
     padding: 45px;
   }
@@ -1646,16 +1648,17 @@ dialog > p {
     font-size: 10px;
   }
   .media-grid {
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
   .media-card > a {
-    height: 125px;
+    height: 96px;
   }
   .media-card > div {
-    padding: 12px;
+    padding: 9px;
   }
   .media-card .badge {
-    margin-top: 7px;
+    margin-top: 4px;
     font-size: 9px;
   }
   .media-picker-grid {

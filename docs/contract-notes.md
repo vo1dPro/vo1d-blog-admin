@@ -1,3 +1,5 @@
+> 历史记录：目录、数据数量和验收结论对应当时版本。当前启动、归档源及验收请以 [2026-09-08 联动记录](current-integration.md) 为准。
+
 # 实际契约与文档差异
 
 本次读取本机后端源码、`/docs` 和 `/docs-json`。API（Application Programming Interface，应用程序编程接口）直接使用根路径，默认后端地址为 `http://localhost:3100`。

@@ -4,12 +4,12 @@
     "articles": 6,
     "categories": 6,
     "tags": 11,
-    "books": 4,
+    "books": 3,
     "games": 47,
     "photos": 10,
-    "skills": 24,
-    "social-links": 3,
-    "media": 110
+    "skills": 23,
+    "social-links": 4,
+    "media": 112
   },
   "steamLibraryCount": 103,
   "steamStatus": {
@@ -22,8 +22,8 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 54,
-        "lastSuccessAt": "2026-09-07T02:38:02.872Z",
-        "nextSyncAt": "2026-09-07T02:43:02.872Z",
+        "lastSuccessAt": "2026-09-08T01:39:08.110Z",
+        "nextSyncAt": "2026-09-08T01:44:08.110Z",
         "lastErrorCode": null
       },
       {
@@ -32,8 +32,8 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 22,
-        "lastSuccessAt": "2026-09-07T02:38:02.165Z",
-        "nextSyncAt": "2026-09-07T02:43:02.165Z",
+        "lastSuccessAt": "2026-09-08T01:39:08.028Z",
+        "nextSyncAt": "2026-09-08T01:44:08.028Z",
         "lastErrorCode": null
       },
       {
@@ -42,8 +42,8 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 36,
-        "lastSuccessAt": "2026-09-07T02:38:02.124Z",
-        "nextSyncAt": "2026-09-07T02:43:02.124Z",
+        "lastSuccessAt": "2026-09-08T01:39:07.899Z",
+        "nextSyncAt": "2026-09-08T01:44:07.899Z",
         "lastErrorCode": null
       }
     ],
@@ -51,13 +51,13 @@
     "syncing": false,
     "libraryVisible": true,
     "gameCount": 103,
-    "lastSuccessAt": "2026-09-07T02:38:02.124Z",
-    "nextSyncAt": "2026-09-07T02:43:02.124Z",
+    "lastSuccessAt": "2026-09-08T01:39:07.899Z",
+    "nextSyncAt": "2026-09-08T01:44:07.899Z",
     "lastErrorCode": null
   },
   "linkedTemporaryGame": true,
   "consoleErrors": [],
-  "verifiedAt": "2026-09-07T02:41:15.302Z",
+  "verifiedAt": "2026-09-08T01:42:52.261Z",
   "cleanup": "all temporary content and media removed; original IDs and game writable fields unchanged",
   "sessionExpiryAndLogout": "passed"
 }

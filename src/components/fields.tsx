@@ -85,6 +85,7 @@ export function NumberField({
   min = 0,
   max = 2147483647,
   step = 1,
+  hint,
 }: {
   label: string;
   value: number;
@@ -92,9 +93,10 @@ export function NumberField({
   min?: number;
   max?: number;
   step?: number;
+  hint?: string;
 }) {
   return (
-    <Field label={label}>
+    <Field label={label} hint={hint}>
       <input
         type="number"
         required

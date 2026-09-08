@@ -44,3 +44,34 @@ desktop.ini
 # Local tooling
 .codex/
 .agents/
+
+# Local verification evidence (keep the API contract snapshot)
+/docs/screenshots/
+/docs/*.json
+!/docs/openapi.json
+blob-report/
+.auth/
+.integration-work/
+*.local
+
+# Private credentials, runtime data and local archives
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+backups/
+exports/
+uploads/
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+*.db
+*.rar
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tgz

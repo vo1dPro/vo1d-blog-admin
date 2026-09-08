@@ -21,6 +21,7 @@ export function CollectionPage<T extends { id: number }>({
   deleteMessage,
   filters = {},
   filterBar,
+  loadPage,
 }: {
   resource: string;
   title: string;
@@ -31,14 +32,17 @@ export function CollectionPage<T extends { id: number }>({
   deleteMessage?: string;
   filters?: Record<string, string>;
   filterBar?: ReactNode;
+  loadPage?: (page: number, signal: AbortSignal) => Promise<Page<T>>;
 }) {
   const [page, setPage] = useState(1);
   const [deleting, setDeleting] = useState<T | null>(null);
   const [sorting, setSorting] = useState(false);
   const query = useQuery({
-    queryKey: ['admin', resource, page, filters],
+    queryKey: ['admin', resource, page, filters, loadPage ? 'custom' : 'default'],
     queryFn: ({ signal }) =>
-      request<Page<T>>(listPath(`/admin/${resource}`, page, 10, filters), { signal }),
+      loadPage
+        ? loadPage(page, signal)
+        : request<Page<T>>(listPath(`/admin/${resource}`, page, 10, filters), { signal }),
   });
   const remove = useMutation({
     mutationFn: (id: number) => request<void>(`/admin/${resource}/${id}`, { method: 'DELETE' }),

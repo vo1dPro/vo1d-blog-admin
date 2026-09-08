@@ -8,14 +8,16 @@ import { ConfirmDialog, Empty, ErrorNotice, Loading, Modal } from '../../compone
 import { Pagination } from '../../components/pagination';
 import { Upload } from './Upload';
 
+const PAGE_SIZE = 50;
+
 export function MediaPage() {
   const [page, setPage] = useState(1);
   const [upload, setUpload] = useState(false);
   const [purpose, setPurpose] = useState<'IMAGE' | 'PHOTO'>('IMAGE');
   const [deleting, setDeleting] = useState<Media | null>(null);
   const media = useQuery({
-    queryKey: ['admin', 'media', page],
-    queryFn: ({ signal }) => request<Page<Media>>(listPath('/admin/media', page), { signal }),
+    queryKey: ['admin', 'media', page, PAGE_SIZE],
+    queryFn: ({ signal }) => request<Page<Media>>(listPath('/admin/media', page, PAGE_SIZE), { signal }),
   });
   const deletion = useMutation({
     mutationFn: (id: number) => request<void>(`/admin/media/${id}`, { method: 'DELETE' }),
@@ -68,7 +70,7 @@ export function MediaPage() {
                         ? '照片展示图'
                         : '照片缩略图'}
                   </span>
-                  <p>{item.altText ?? '未设置替代文本'}</p>
+                  <p title={item.altText ?? undefined}>{item.altText ?? '未设置替代文本'}</p>
                   <small>
                     {item.width ?? '—'} × {item.height ?? '—'} ·{' '}
                     {(item.sizeBytes / 1024).toFixed(1)} KiB

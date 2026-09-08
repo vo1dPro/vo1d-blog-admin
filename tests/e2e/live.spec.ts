@@ -307,8 +307,8 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
       sortOrder: 1000000,
     });
     await page.goto(`/games/${testGame.id}`);
-    await expect(page.getByLabel('手工时长（小时）')).toHaveValue('7');
-    await page.getByLabel('手工时长（小时）').fill('0');
+    await expect(page.getByLabel('自定义时长（小时）')).toHaveValue('7');
+    await page.getByLabel('自定义时长（小时）').fill('0');
     await page.getByRole('button', { name: '保存更改' }).click();
     await expect(page.getByRole('status')).toContainText('保存成功');
     const unlinked = library.find(
@@ -321,7 +321,7 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
       });
       expect(linkResponse.status()).toBe(200);
       await page.reload();
-      await expect(page.getByLabel('手工时长（小时）')).toHaveValue('0');
+      await expect(page.getByLabel('自定义时长（小时）')).toHaveValue('0');
       await expect(page.getByText(`已关联 · App ID ${unlinked.appId}`)).toBeVisible();
       await page.getByRole('button', { name: '解除关联', exact: true }).click();
       await page.getByRole('button', { name: '保存更改' }).click();
@@ -431,7 +431,7 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
     }
     await page.goto(`/games/${testGame.id}`);
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.getByLabel('手工时长（小时）')).toBeVisible();
+    await expect(page.getByLabel('自定义时长（小时）')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

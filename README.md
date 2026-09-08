@@ -2,20 +2,20 @@
 
 独立中文内容管理后台，使用 React 19、Vite 8、TypeScript strict。通过现有后端根路径接口管理内容，运行时不访问数据库或对象存储管理接口。
 
-三个项目的职责、已迁移与未迁移数据、首次初始化及日常启动步骤，见 [三项目使用说明](docs/usage-guide.md)。目前博客所有目标业务模块均已接入后端，见 [完整联动验收](docs/full-integration.md)。图标上传和多账号汇总见 [功能说明](docs/icons-multi-steam.md)。
+三个项目的职责、启动及数据边界见 [当前使用说明](docs/usage-guide.md)，本次验证见 [2026-09-08 联动记录](docs/current-integration.md)。
 
 ## 本地运行
 
 准备上传 Gitee 或首次上线，请先阅读 [上传仓库与首次上线](docs/release-guide.md)，其中包含隐私处理、源码导出、数据迁移和服务器准备步骤。
 
-在 `D:\Code_Project\vo1d-blog-admin` 执行：
+在 `vo1d-blog-admin` 执行：
 
 ```powershell
 fnm env --shell powershell | Out-String | Invoke-Expression
 fnm use 24.20.0
 node --version
 pnpm install --frozen-lockfile
-Copy-Item .env.example .env
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 pnpm dev
 ```
 

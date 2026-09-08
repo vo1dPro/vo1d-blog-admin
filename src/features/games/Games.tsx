@@ -1,5 +1,6 @@
 import { SteamBreakdown } from '../steam/SteamPage';
 import type { Game } from '../../api/types';
+import { allPages, type Page } from '../../api/client';
 import {
   CollectionPage,
   ResourceEditor,
@@ -12,12 +13,30 @@ import { formatDate } from '../../lib/values';
 import { MediaPicker } from '../media/MediaPicker';
 import { SteamPicker } from '../steam/SteamPicker';
 import { gameInitial, gameSchema } from './model';
+
+async function loadGamesByPlaytime(page: number, signal: AbortSignal): Promise<Page<Game>> {
+  // Sort the complete collection before slicing; Steam display hours may differ from manual hours.
+  const games = await allPages<Game>('/admin/games', signal);
+  games.sort(
+    (a, b) => b.playtimeHours - a.playtimeHours || a.sortOrder - b.sortOrder || a.id - b.id,
+  );
+  const pageSize = 10;
+  return {
+    items: games.slice((page - 1) * pageSize, page * pageSize),
+    page,
+    pageSize,
+    total: games.length,
+    totalPages: Math.ceil(games.length / pageSize),
+  };
+}
+
 export function GamesPage() {
   return (
     <CollectionPage<Game>
       resource="games"
       title="游戏"
-      description="管理游戏收藏，留下自己的评分与体验。"
+      description="按游戏时长从高到低展示，相同时长沿用手动顺序。"
+      loadPage={loadGamesByPlaytime}
       name={(item) => item.title}
       sortable
       columns={[
@@ -45,7 +64,7 @@ export function GamesPage() {
           render: (item) => (
             <div>
               {item.playtimeHours} 小时
-              <small className="block">手工 {item.manualPlaytimeHours} 小时</small>
+              <small className="block">自定义 {item.manualPlaytimeHours} 小时</small>
             </div>
           ),
         },
@@ -112,7 +131,8 @@ export function GameEditor() {
                   step={0.1}
                 />
                 <NumberField
-                  label="手工时长（小时）"
+                  label="自定义时长（小时）"
+                  hint="大于 0 时覆盖 Steam 时长；填 0 使用 Steam 时长。两者不会相加。"
                   value={value.playtimeHours}
                   onChange={(v) => set('playtimeHours', v)}
                 />
@@ -142,7 +162,7 @@ export function GameEditor() {
                         <dd>{item.steam.name}</dd>
                       </div>
                       <div>
-                        <dt>累计时长</dt>
+                        <dt>Steam 累计时长</dt>
                         <dd>
                           {item.steam.playtimeMinutes} 分钟（
                           {Math.floor(item.steam.playtimeMinutes / 60)} 小时）
@@ -172,7 +192,9 @@ export function GameEditor() {
                     </dl>
                   )}
                   {item && item.steamAppId !== null && !item.steam && (
-                    <p className="notice">已关联，但暂无可用快照。当前展示时长使用手工值。</p>
+                    <p className="notice">
+                      已关联，但暂无可用快照。当前使用自定义时长；自定义为 0 时显示 0 小时。
+                    </p>
                   )}
                 </div>
               </Section>

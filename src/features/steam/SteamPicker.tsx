@@ -34,7 +34,7 @@ export function SteamPicker({
           </button>
         )}
       </div>
-      <small>关联或解除后需保存。个人评分、封面、评论与手工时长独立保留。</small>
+      <small>关联或解除后需保存。个人评分、封面、评论与自定义时长独立保留。</small>
       {open && (
         <Modal title="选择 Steam 游戏" onClose={() => setOpen(false)}>
           {query.isPending ? (

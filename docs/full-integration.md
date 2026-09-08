@@ -1,6 +1,8 @@
+> 历史记录：本文记录回溯前版本，不代表当前验收结果。当前状态见 [2026-09-08 联动记录](current-integration.md)。
+
 # 三项目完整联动交付
 
-更新：2026-09-07。实际目录为 `D:\Code_Project`。三个项目保持独立，没有重新搭建、合并目录或增加依赖。
+更新：2026-09-07。项目位于同一工作区目录下。三个项目保持独立，没有重新搭建、合并目录或增加依赖。
 
 ## 关系与联动范围
 
@@ -66,7 +68,7 @@ pnpm exec node --version
 1. 启动 Docker Desktop，在后端目录执行：
 
 ```powershell
-Set-Location D:\Code_Project\vo1d-blog-api
+Set-Location ..\vo1d-blog-api
 docker compose --profile app up -d
 docker compose ps --all
 ```
@@ -76,14 +78,14 @@ docker compose ps --all
 2. 在后台终端执行：
 
 ```powershell
-Set-Location D:\Code_Project\vo1d-blog-admin
+Set-Location ..\vo1d-blog-admin
 pnpm dev
 ```
 
 3. 在博客终端执行：
 
 ```powershell
-Set-Location D:\Code_Project\vo1d-blog
+Set-Location ..\vo1d-blog
 pnpm dev --host localhost --port 5173 --strictPort
 ```
 

@@ -125,14 +125,14 @@ test('分类、标签、媒体选择器加载多页', async ({ page }) => {
   await page.getByRole('button', { name: '选择素材 51', exact: true }).click();
   await expect(page.getByText('素材 #51', { exact: true })).toBeVisible();
 });
-test('Steam 关联翻页、解除关联、手工时长与只读字段保护', async ({ page }) => {
+test('Steam 关联翻页、解除关联、自定义时长与只读字段保护', async ({ page }) => {
   const state = await mockApi(page);
   await page.goto('/games/1');
-  await expect(page.getByLabel('手工时长（小时）')).toHaveValue('7');
+  await expect(page.getByLabel('自定义时长（小时）')).toHaveValue('7');
   await page.getByRole('button', { name: '选择 Steam 游戏' }).click();
   await page.getByRole('button', { name: '下一页', exact: true }).click();
   await page.getByRole('button', { name: /第二页 Steam 游戏/ }).click();
-  await page.getByLabel('手工时长（小时）').fill('0');
+  await page.getByLabel('自定义时长（小时）').fill('0');
   await page.getByRole('button', { name: '保存更改' }).click();
   await expect(page.getByRole('status')).toContainText('保存成功');
   expect(state.writes.at(-1)?.body).toEqual({ playtimeHours: 0, steamAppId: 999 });
