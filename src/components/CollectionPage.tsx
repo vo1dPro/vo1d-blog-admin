@@ -22,6 +22,7 @@ export function CollectionPage<T extends { id: number }>({
   filters = {},
   filterBar,
   loadPage,
+  loadCollection,
 }: {
   resource: string;
   title: string;
@@ -33,16 +34,42 @@ export function CollectionPage<T extends { id: number }>({
   filters?: Record<string, string>;
   filterBar?: ReactNode;
   loadPage?: (page: number, signal: AbortSignal) => Promise<Page<T>>;
+  loadCollection?: (signal: AbortSignal) => Promise<T[]>;
 }) {
   const [page, setPage] = useState(1);
   const [deleting, setDeleting] = useState<T | null>(null);
   const [sorting, setSorting] = useState(false);
   const query = useQuery({
-    queryKey: ['admin', resource, page, filters, loadPage ? 'custom' : 'default'],
-    queryFn: ({ signal }) =>
-      loadPage
+    queryKey: [
+      'admin',
+      resource,
+      loadCollection ? 'collection' : page,
+      filters,
+      loadPage ? 'custom' : 'default',
+    ],
+    queryFn: async ({ signal }) => {
+      if (loadCollection) {
+        const items = await loadCollection(signal);
+        return {
+          items,
+          page: 1,
+          pageSize: 10,
+          total: items.length,
+          totalPages: Math.ceil(items.length / 10),
+        };
+      }
+      return loadPage
         ? loadPage(page, signal)
-        : request<Page<T>>(listPath(`/admin/${resource}`, page, 10, filters), { signal }),
+        : request<Page<T>>(listPath(`/admin/${resource}`, page, 10, filters), { signal });
+    },
+    select: (data) =>
+      loadCollection
+        ? {
+            ...data,
+            page,
+            items: data.items.slice((page - 1) * data.pageSize, page * data.pageSize),
+          }
+        : data,
   });
   const remove = useMutation({
     mutationFn: (id: number) => request<void>(`/admin/${resource}/${id}`, { method: 'DELETE' }),

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-08T01:42:40.210Z",
+  "checkedAt": "2026-09-09T10:55:00.201Z",
   "checks": [
     "site profile UI save -> all public placements, avatar, no visitor cookie",
     "book UI create/edit/replace/hide, nullable dates/source, zero progress, real reorder 204",

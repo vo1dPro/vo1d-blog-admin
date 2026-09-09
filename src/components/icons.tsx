@@ -1,38 +1,17 @@
 import { BookOpen, Braces, Code2, Folder, Globe, Layers, Server, Shapes } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Field } from './fields';
-const localIcons: Record<string, string> = {
-  typescript: 'typescript',
-  javascript: 'javascript',
-  react: 'react-light',
-  vite: 'vite',
-  nodejs: 'nodejs',
-  html: 'html5',
-  html5: 'html5',
-  css: 'css-old',
-  'css-old': 'css-old',
-  python: 'python',
-  java: 'java',
-  c: 'c',
-  'c-plusplus': 'c-plusplus',
-  vue: 'vue',
-  'three-js': 'three-js-light',
-  git: 'git',
-  github: 'github-light',
-  vscode: 'vscode',
-  mysql: 'mysql-light',
-  postgresql: 'postgresql',
-  redis: 'redis',
-  markdown: 'markdown-light',
-  'ant-design': 'ant-design-dark-theme',
-  'ant-design-dark-theme': 'ant-design-dark-theme',
-  codex: 'codex-light',
-  claude: 'claude-ai',
-  'claude-ai': 'claude-ai',
-  chrome: 'chrome',
-  'x-formerly-twitter': 'x-formerly-twitter-light',
-  tiktok: 'tiktok-light',
-};
+import { useQuery } from '@tanstack/react-query';
+import { loadIconRegistry } from '../api/icon-registry';
+import { ErrorNotice } from './feedback';
+
+function useIconRegistry(enabled = true) {
+  return useQuery({
+    queryKey: ['admin', 'icon-registry'],
+    queryFn: ({ signal }) => loadIconRegistry(signal),
+    enabled,
+  });
+}
 const categoryIcons: Record<string, LucideIcon> = {
   LayoutGrid: Layers,
   Code: Code2,
@@ -44,22 +23,14 @@ const categoryIcons: Record<string, LucideIcon> = {
   Folder,
 };
 export function BusinessIcon({ iconKey }: { iconKey: string | null }) {
-  const asset = iconKey ? localIcons[iconKey] : undefined;
+  const query = useIconRegistry(Boolean(iconKey && !categoryIcons[iconKey]));
+  const pair = iconKey ? query.data?.[iconKey] : undefined;
   const Icon = (iconKey ? categoryIcons[iconKey] : undefined) ?? Shapes;
-  return asset?.endsWith('-light') ? (
-    <span className="icon-pair" aria-hidden="true">
-      <img className="business-icon icon-light" src={`/icons/${asset}.svg`} alt="" />
-      <img
-        className="business-icon icon-dark"
-        src={`/icons/${asset.replace(/-light$/, '-dark')}.svg`}
-        alt=""
-      />
-    </span>
-  ) : asset ? (
-    <img className="business-icon" src={`/icons/${asset}.svg`} alt="" />
-  ) : (
-    <Icon size={20} aria-hidden="true" />
-  );
+  if (pair) return <UploadedIcon icon={pair.icon} darkIcon={pair.darkIcon} />;
+  if (query.isError && iconKey && !categoryIcons[iconKey]) {
+    return <span title="图标加载失败"><Icon size={20} aria-hidden="true" /></span>;
+  }
+  return <Icon size={20} aria-hidden="true" />;
 }
 export function IconField({
   value,
@@ -70,8 +41,9 @@ export function IconField({
   onChange: (value: string) => void;
   nullable?: boolean;
 }) {
+  const query = useIconRegistry();
   return (
-    <Field label="图标标识" hint="仅使用本地图标注册表；未知标识显示默认图标。">
+    <Field label="图标标识" hint="支持内置分类图标，以及已配置的技能和社交图标；未知标识显示默认图标。">
       <div className="icon-field">
         <BusinessIcon iconKey={value} />
         <input
@@ -84,10 +56,12 @@ export function IconField({
         />
       </div>
       <datalist id="business-icon-keys">
-        {[...Object.keys(localIcons), ...Object.keys(categoryIcons)].map((key) => (
+        {[...new Set([...Object.keys(query.data ?? {}), ...Object.keys(categoryIcons)])].map((key) => (
           <option value={key} key={key} />
         ))}
       </datalist>
+      {query.isPending && <small>正在加载图标…</small>}
+      {query.isError && <ErrorNotice error={query.error} retry={() => void query.refetch()} />}
     </Field>
   );
 }

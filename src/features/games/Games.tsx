@@ -1,6 +1,6 @@
 import { SteamBreakdown } from '../steam/SteamPage';
 import type { Game } from '../../api/types';
-import { allPages, type Page } from '../../api/client';
+import { allPages } from '../../api/client';
 import {
   CollectionPage,
   ResourceEditor,
@@ -14,20 +14,13 @@ import { MediaPicker } from '../media/MediaPicker';
 import { SteamPicker } from '../steam/SteamPicker';
 import { gameInitial, gameSchema } from './model';
 
-async function loadGamesByPlaytime(page: number, signal: AbortSignal): Promise<Page<Game>> {
+async function loadGamesByPlaytime(signal: AbortSignal): Promise<Game[]> {
   // Sort the complete collection before slicing; Steam display hours may differ from manual hours.
   const games = await allPages<Game>('/admin/games', signal);
   games.sort(
     (a, b) => b.playtimeHours - a.playtimeHours || a.sortOrder - b.sortOrder || a.id - b.id,
   );
-  const pageSize = 10;
-  return {
-    items: games.slice((page - 1) * pageSize, page * pageSize),
-    page,
-    pageSize,
-    total: games.length,
-    totalPages: Math.ceil(games.length / pageSize),
-  };
+  return games;
 }
 
 export function GamesPage() {
@@ -36,7 +29,7 @@ export function GamesPage() {
       resource="games"
       title="游戏"
       description="按游戏时长从高到低展示，相同时长沿用手动顺序。"
-      loadPage={loadGamesByPlaytime}
+      loadCollection={loadGamesByPlaytime}
       name={(item) => item.title}
       sortable
       columns={[

@@ -105,6 +105,6 @@ pnpm test:e2e
 
 真实测试使用显式创建并记录编号的临时内容、临时管理员和媒体；站点单例测试暂存原字段并在 finally 中通过后端恢复，结束按引用顺序清理，核对原始编号集合和所有已有游戏的可写字段。不会重导入数据、重置已有管理员、触发真实全库同名关联。Steam 同步冷却和全局排序失败在模拟浏览器测试覆盖；真实排序仅提交临时技能或书籍记录。
 
-详细实测见 [验收记录](docs/verification.md)。静态部署见 [部署说明](docs/deployment.md)，博客展示端后续工作见 [接入事项](docs/blog-follow-up.md)。
+历史联动结果见 [联动记录](docs/current-integration.md)。静态部署见 [部署说明](docs/deployment.md)，当前启动和数据边界见 [使用说明](docs/usage-guide.md)。
 
 完整浏览器套件还需要博客已运行于 5173；`tests/e2e/integration.live.spec.ts` 验证真实后台到博客的保存、媒体、发布撤回及路由，`blog-states.spec.ts` 为补充故障注入。

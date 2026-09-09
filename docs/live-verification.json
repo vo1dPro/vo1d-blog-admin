@@ -22,9 +22,9 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 54,
-        "lastSuccessAt": "2026-09-08T01:39:08.110Z",
-        "nextSyncAt": "2026-09-08T01:44:08.110Z",
-        "lastErrorCode": null
+        "lastSuccessAt": "2026-09-08T05:12:09.134Z",
+        "nextSyncAt": "2026-09-09T11:39:34.023Z",
+        "lastErrorCode": "NETWORK"
       },
       {
         "name": "vo2d",
@@ -32,9 +32,9 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 22,
-        "lastSuccessAt": "2026-09-08T01:39:08.028Z",
-        "nextSyncAt": "2026-09-08T01:44:08.028Z",
-        "lastErrorCode": null
+        "lastSuccessAt": "2026-09-08T05:12:09.053Z",
+        "nextSyncAt": "2026-09-09T11:39:34.026Z",
+        "lastErrorCode": "NETWORK"
       },
       {
         "name": "vo3d",
@@ -42,22 +42,22 @@
         "syncing": false,
         "libraryVisible": true,
         "gameCount": 36,
-        "lastSuccessAt": "2026-09-08T01:39:07.899Z",
-        "nextSyncAt": "2026-09-08T01:44:07.899Z",
-        "lastErrorCode": null
+        "lastSuccessAt": "2026-09-08T05:12:09.158Z",
+        "nextSyncAt": "2026-09-09T11:39:34.025Z",
+        "lastErrorCode": "NETWORK"
       }
     ],
     "intervalSeconds": 300,
     "syncing": false,
     "libraryVisible": true,
     "gameCount": 103,
-    "lastSuccessAt": "2026-09-08T01:39:07.899Z",
-    "nextSyncAt": "2026-09-08T01:44:07.899Z",
-    "lastErrorCode": null
+    "lastSuccessAt": "2026-09-08T05:12:09.053Z",
+    "nextSyncAt": "2026-09-09T11:39:34.023Z",
+    "lastErrorCode": "NETWORK"
   },
   "linkedTemporaryGame": true,
   "consoleErrors": [],
-  "verifiedAt": "2026-09-08T01:42:52.261Z",
+  "verifiedAt": "2026-09-09T10:55:11.833Z",
   "cleanup": "all temporary content and media removed; original IDs and game writable fields unchanged",
   "sessionExpiryAndLogout": "passed"
 }

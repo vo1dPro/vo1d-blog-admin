@@ -1,5 +1,5 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
-import { createLiveAdmin } from './live-fixture';
+import { createLiveAdmin, loginLiveAdmin } from './live-fixture';
 import type { Game } from '../../src/api/types';
 import type { Page } from '../../src/api/client';
 
@@ -24,11 +24,7 @@ test('真实后台：自定义覆盖 Steam，清零恢复，总时长与排序�
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   try {
-    await page.goto('/login');
-    await page.getByLabel('邮箱', { exact: true }).fill(admin.email);
-    await page.getByLabel('密码', { exact: true }).fill(admin.password);
-    await page.getByRole('button', { name: '进入工作台' }).click();
-    await expect(page).not.toHaveURL(/login/);
+    await loginLiveAdmin(page, admin);
     const initial = await games(context.request, '/admin/games');
     original = initial.find(
       (game) => game.isVisible && game.steam && game.steam.playtimeMinutes > 120,

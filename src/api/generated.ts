@@ -96,6 +96,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/media/{id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MediaController_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/site-profile": {
         parameters: {
             query?: never;
@@ -1628,6 +1644,36 @@ export interface operations {
         responses: {
             /** @description Unreferenced media asset deleted */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_content: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                    "image/png": string;
+                    "image/jpeg": string;
+                };
+            };
+            /** @description Database image not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

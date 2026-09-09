@@ -1,7 +1,7 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { createLiveAdmin } from './live-fixture';
+import { createLiveAdmin, loginLiveAdmin } from './live-fixture';
 import { tinyPng } from './mock-api';
 import type { Media, SiteProfile } from '../../src/api/types';
 
@@ -60,11 +60,7 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
     await expect(page.getByRole('status')).toContainText('保存成功');
   }
   try {
-    await page.goto('/login');
-    await page.getByLabel('邮箱', { exact: true }).fill(admin.email);
-    await page.getByLabel('密码', { exact: true }).fill(admin.password);
-    await page.getByRole('button', { name: '进入工作台' }).click();
-    await expect(page).not.toHaveURL(/login/);
+    await loginLiveAdmin(page, admin);
     for (const resource of [
       'books',
       'photos',

@@ -1,6 +1,36 @@
 import { randomBytes } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { z } from 'zod';
+import { expect, test, type Page } from '@playwright/test';
+
+// Live suites share the real IP quota. Honor a rejected login's cooldown without
+// clearing throttle records or weakening the backend's security settings.
+export async function loginLiveAdmin(page: Page, admin: { email: string; password: string }) {
+  await page.goto('/login');
+  await page.getByLabel('邮箱', { exact: true }).fill(admin.email);
+  await page.getByLabel('密码', { exact: true }).fill(admin.password);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const pending = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === '/auth/login' &&
+        response.request().method() === 'POST',
+    );
+    await page.getByRole('button', { name: '进入工作台' }).click();
+    const response = await pending;
+    if (response.status() === 429 && attempt === 0) {
+      const { retryAfter } = z
+        .object({ retryAfter: z.number().int().min(1).max(3600) })
+        .parse(await response.json());
+      const delay = retryAfter * 1000 + 250;
+      test.setTimeout(test.info().timeout + delay + 5000);
+      await page.waitForTimeout(delay);
+      continue;
+    }
+    expect(response.status()).toBe(200);
+    await expect(page).not.toHaveURL(/login/);
+    return;
+  }
+}
 
 // Test provisioning only. Runs INSIDE the existing local backend container.
 // No .env file, database URL or Steam key is read into the Admin project.

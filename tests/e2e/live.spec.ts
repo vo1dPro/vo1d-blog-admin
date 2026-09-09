@@ -1,6 +1,6 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
-import { createLiveAdmin } from './live-fixture';
+import { createLiveAdmin, loginLiveAdmin } from './live-fixture';
 import { tinyPng } from './mock-api';
 import type { Page as ApiPage } from '../../src/api/client';
 import type { Article, Game, Media, SteamGame, SteamStatus } from '../../src/api/types';
@@ -16,11 +16,7 @@ test('真实后端：图标上传替换、深浅主题、媒体保护和多账�
   const records: { resource: string; id: number }[] = [];
   const mediaIds: number[] = [];
   try {
-    await page.goto('/login');
-    await page.getByLabel('邮箱', { exact: true }).fill(admin.email);
-    await page.getByLabel('密码', { exact: true }).fill(admin.password);
-    await page.getByRole('button', { name: '进入工作台' }).click();
-    await expect(page).not.toHaveURL(/login/);
+    await loginLiveAdmin(page, admin);
     await page.goto('/skills/new');
     await page.getByLabel('技能名称', { exact: true }).fill('临时图标验证');
     await page.getByRole('button', { name: '选择浅色背景图标 / 通用', exact: true }).click();
@@ -128,11 +124,7 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
   ];
   const before: Record<string, number[]> = {};
   async function login() {
-    await page.goto('/login');
-    await page.getByLabel('邮箱', { exact: true }).fill(admin.email);
-    await page.getByLabel('密码', { exact: true }).fill(admin.password);
-    await page.getByRole('button', { name: '进入工作台' }).click();
-    await expect(page).not.toHaveURL(/login/);
+    await loginLiveAdmin(page, admin);
   }
   async function create(resource: string, data: object) {
     const response = await api.post(`${base}/admin/${resource}`, { data, headers: origin });
