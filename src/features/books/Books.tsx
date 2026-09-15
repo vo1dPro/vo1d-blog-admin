@@ -126,6 +126,19 @@ export function BookEditor() {
                   onChange={(v) => set('finishedAt', v)}
                 />
               </Section>
+              <Section
+                title="读书心得"
+                description="保存后显示在博客的书本窗口中，留空则不展示正文。"
+              >
+                <TextField
+                  label="心得正文"
+                  multiline
+                  value={value.readingNotes}
+                  onChange={(v) => set('readingNotes', v)}
+                  maxLength={50000}
+                  hint="支持多段文字和换行，最多 50000 字。"
+                />
+              </Section>
               <Section title="展示设置">
                 <NumberField
                   label="排序值"

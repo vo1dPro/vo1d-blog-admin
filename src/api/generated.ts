@@ -1118,6 +1118,7 @@ export interface components {
             /** Format: uri */
             sourceUrl: string | null;
             readingOrder: number;
+            readingNotes: string;
             /** Format: date-time */
             lastReadAt: string | null;
             /** Format: date-time */
@@ -1149,6 +1150,11 @@ export interface components {
             /** @example https://example.com/book */
             sourceUrl?: string | null;
             readingOrder: number;
+            /**
+             * @description Plain-text reading notes; an empty string clears the notes.
+             * @default
+             */
+            readingNotes: string;
             /** Format: date-time */
             lastReadAt?: string | null;
             /** Format: date-time */
@@ -1172,6 +1178,11 @@ export interface components {
             /** @example https://example.com/book */
             sourceUrl?: string | null;
             readingOrder?: number;
+            /**
+             * @description Plain-text reading notes; an empty string clears the notes.
+             * @default
+             */
+            readingNotes: string;
             /** Format: date-time */
             lastReadAt?: string | null;
             /** Format: date-time */

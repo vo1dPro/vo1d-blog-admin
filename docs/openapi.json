@@ -4347,6 +4347,10 @@
           "readingOrder": {
             "type": "number"
           },
+          "readingNotes": {
+            "type": "string",
+            "maxLength": 50000
+          },
           "lastReadAt": {
             "type": "string",
             "nullable": true,
@@ -4393,6 +4397,7 @@
           "sourceName",
           "sourceUrl",
           "readingOrder",
+          "readingNotes",
           "lastReadAt",
           "startedAt",
           "finishedAt",
@@ -4471,6 +4476,12 @@
             "type": "number",
             "minimum": 1
           },
+          "readingNotes": {
+            "type": "string",
+            "default": "",
+            "maxLength": 50000,
+            "description": "Plain-text reading notes; an empty string clears the notes."
+          },
           "lastReadAt": {
             "type": "string",
             "format": "date-time",
@@ -4542,6 +4553,12 @@
           "readingOrder": {
             "type": "number",
             "minimum": 1
+          },
+          "readingNotes": {
+            "type": "string",
+            "default": "",
+            "maxLength": 50000,
+            "description": "Plain-text reading notes; an empty string clears the notes."
           },
           "lastReadAt": {
             "type": "string",
