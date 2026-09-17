@@ -74,6 +74,20 @@ describe('HTTP contract', () => {
   });
 });
 describe('writable DTOs and meaningful empty values', () => {
+  it('defaults controller use to false and sends only the changed controller field', () => {
+    const initial = {
+      ...gameInitial(),
+      title: 'Test',
+      coverMediaId: 1,
+      platform: 'Original Publisher',
+      playtimeHours: 12,
+    };
+    expect(initial.usesController).toBe(false);
+    const enabled = gameSchema.parse({ ...initial, usesController: true });
+    expect(changedFields(initial, enabled)).toEqual({ usesController: true });
+    expect(changedFields(enabled, initial)).toEqual({ usesController: false });
+    expect(gameSchema.safeParse({ ...initial, usesController: 'true' }).success).toBe(false);
+  });
   it('maps manual hours and discards Steam and read-only properties', () => {
     const item = {
       id: 7,

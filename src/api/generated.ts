@@ -436,6 +436,23 @@ export interface paths {
         patch: operations["AdminBooksController_update"];
         trace?: never;
     };
+    "/games/playing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current visible game confirmed by Steam; never infer presence from browsing */
+        get: operations["GamesController_playing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/games": {
         parameters: {
             query?: never;
@@ -1245,6 +1262,8 @@ export interface components {
             rating: number;
             /** @description Effective display hours: custom hours when positive, otherwise aggregated Steam minutes rounded down to hours, or 0 when unavailable. Never add custom and Steam hours. */
             playtimeHours: number;
+            /** @default false */
+            usesController: boolean;
             likeLevel: number;
             comment: string | null;
             isVisible: boolean;
@@ -1253,6 +1272,20 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        GamePresenceResponseDto: {
+            /** @enum {string} */
+            source: "steam";
+            /** @enum {string} */
+            state: "playing" | "idle" | "unavailable" | "unconfigured";
+            game: components["schemas"]["GameResponseDto"] | null;
+            /** @description Sum of effective hours of all visible games */
+            totalGameHours: number;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            refreshAfterMs: number;
         };
         GamePageResponseDto: {
             items: components["schemas"]["GameResponseDto"][];
@@ -1271,6 +1304,11 @@ export interface components {
             rating: number;
             /** @description Custom hours: positive values override Steam; 0 uses Steam hours. */
             playtimeHours: number;
+            /**
+             * @description Whether this game is played with a controller
+             * @default false
+             */
+            usesController: boolean;
             likeLevel: number;
             comment?: string | null;
             /** @default true */
@@ -1288,6 +1326,11 @@ export interface components {
             rating?: number;
             /** @description Custom hours: positive values override Steam; 0 uses Steam hours. */
             playtimeHours?: number;
+            /**
+             * @description Whether this game is played with a controller
+             * @default false
+             */
+            usesController: boolean;
             likeLevel?: number;
             comment?: string | null;
             /** @default true */
@@ -2703,6 +2746,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    GamesController_playing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePresenceResponseDto"];
+                };
             };
         };
     };

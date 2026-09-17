@@ -76,6 +76,14 @@ export function GamesPage() {
           ),
         },
         { title: '可见性', render: (item) => <Visibility visible={item.isVisible} /> },
+        {
+          title: '手柄游玩',
+          render: (item) => (
+            <span className={`badge ${item.usesController ? 'blue' : ''}`}>
+              {item.usesController ? '使用' : '不使用'}
+            </span>
+          ),
+        },
       ]}
     />
   );
@@ -116,6 +124,11 @@ export function GameEditor() {
                 />
               </Section>
               <Section title="个人体验" description="这些编辑字段不会被 Steam 同步覆盖。">
+                <Toggle
+                  label="使用手柄游玩"
+                  checked={value.usesController}
+                  onChange={(v) => set('usesController', v)}
+                />
                 <NumberField
                   label="个人评分（0～10）"
                   value={value.rating}

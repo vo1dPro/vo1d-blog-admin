@@ -1708,6 +1708,28 @@
         ]
       }
     },
+    "/games/playing": {
+      "get": {
+        "operationId": "GamesController_playing",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamePresenceResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Current visible game confirmed by Steam; never infer presence from browsing",
+        "tags": [
+          "games"
+        ]
+      }
+    },
     "/games": {
       "get": {
         "operationId": "GamesController_findAll",
@@ -4770,6 +4792,10 @@
             "minimum": 0,
             "description": "Effective display hours: custom hours when positive, otherwise aggregated Steam minutes rounded down to hours, or 0 when unavailable. Never add custom and Steam hours."
           },
+          "usesController": {
+            "type": "boolean",
+            "default": false
+          },
           "likeLevel": {
             "type": "number",
             "minimum": 0,
@@ -4806,12 +4832,67 @@
           "cover",
           "rating",
           "playtimeHours",
+          "usesController",
           "likeLevel",
           "comment",
           "isVisible",
           "sortOrder",
           "createdAt",
           "updatedAt"
+        ]
+      },
+      "GamePresenceResponseDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "steam"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "playing",
+              "idle",
+              "unavailable",
+              "unconfigured"
+            ]
+          },
+          "game": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameResponseDto"
+              }
+            ]
+          },
+          "totalGameHours": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Sum of effective hours of all visible games"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshAfterMs": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "state",
+          "game",
+          "totalGameHours",
+          "updatedAt",
+          "expiresAt",
+          "refreshAfterMs"
         ]
       },
       "GamePageResponseDto": {
@@ -4882,6 +4963,11 @@
             "minimum": 0,
             "description": "Custom hours: positive values override Steam; 0 uses Steam hours."
           },
+          "usesController": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this game is played with a controller"
+          },
           "likeLevel": {
             "type": "number",
             "minimum": 0,
@@ -4942,6 +5028,11 @@
             "type": "number",
             "minimum": 0,
             "description": "Custom hours: positive values override Steam; 0 uses Steam hours."
+          },
+          "usesController": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this game is played with a controller"
           },
           "likeLevel": {
             "type": "number",

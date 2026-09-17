@@ -11,6 +11,7 @@ export const gameSchema: z.ZodType<GameInput, GameInput> = z.object({
     .max(10)
     .refine((value) => Math.abs(value * 10 - Math.round(value * 10)) < 1e-8, '评分最多一位小数'),
   playtimeHours: integer(),
+  usesController: z.boolean(),
   likeLevel: integer(0, 5),
   comment: nullableText(5000),
   steamAppId: id.nullable(),
@@ -23,6 +24,7 @@ export function gameInitial(item?: Game): GameInput {
     coverMediaId: item?.coverMediaId ?? 0,
     rating: item?.rating ?? 0,
     playtimeHours: item?.manualPlaytimeHours ?? 0,
+    usesController: item?.usesController ?? false,
     likeLevel: item?.likeLevel ?? 0,
     comment: item?.comment ?? null,
     steamAppId: item?.steamAppId ?? null,
