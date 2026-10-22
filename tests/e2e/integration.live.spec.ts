@@ -284,7 +284,7 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
       status: 'DRAFT',
     });
     await blog.goto(`${blogUrl}/blog/${article.id}`);
-    await expect(blog.getByRole('heading', { name: 'Article not found' })).toBeVisible();
+    await expect(blog.locator('#not-found-title')).toBeVisible();
     await page.goto(`/articles/${article.id}`);
     await page.getByLabel('文章状态').selectOption('PUBLISHED');
     await page.getByLabel('发布时间', { exact: true }).fill('2026-01-01T12:00');
@@ -303,7 +303,7 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
         publishedAt: '2026-01-01T00:00:00Z',
       });
     await blog.reload();
-    await expect(blog.locator('h1').first()).toHaveText(prefix);
+    expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(200);
     await page
       .getByLabel('Markdown 正文')
       .fill('# 章节一\n\n正文已更新\n\n## 章节二\n\n<script>window.hacked=1</script>');
@@ -311,43 +311,27 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
     await page.getByRole('button', { name: `选择素材 ${secondMedia.id}`, exact: true }).click();
     await save();
     await blog.reload();
-    await expect(blog.locator('.article-content')).toContainText('正文已更新');
-    await expect(blog.locator('.article-content h1')).toHaveText('章节一');
-    await expect(blog.locator('.article-content h2')).toHaveText('章节二');
-    await expect(blog.getByRole('complementary')).toContainText('联动开发者');
-    await expect(
-      blog.getByRole('navigation', { name: 'On this page' }).getByRole('link'),
-    ).toHaveCount(2);
-    await blog
-      .getByRole('navigation', { name: 'On this page' })
-      .getByRole('link', { name: '章节二' })
-      .click();
-    expect(new URL(blog.url()).hash).not.toBe('');
-    await expect(blog.locator('.article-content script')).toHaveCount(0);
-    await expect(blog.getByRole('heading', { name: 'Read more', exact: true })).toBeVisible();
-    await expect(blog.locator('a[href^="/blog/"]')).toHaveCount(3);
+    // Article management remains supported by the API; its visitor UI was retired.
+    const detail = await (await visitor.request.get(`${base}/articles/${article.id}`)).json() as {
+      contentHtml: string; toc: unknown[]; cover: { url: string };
+    };
+    expect(detail.contentHtml).toContain('正文已更新');
+    expect(detail.contentHtml).not.toContain('<script');
+    expect(detail.toc).toHaveLength(2);
+    expect(detail.cover.url).toBe(secondMedia.url);
+    const related = await (await visitor.request.get(`${base}/articles/${article.id}/related?limit=3`)).json() as { items: unknown[] };
+    expect(related.items).toHaveLength(3);
     await blog.goto(`${blogUrl}/blog/${prefix}`);
-    await expect(blog.locator('h1').first()).toHaveText(prefix);
-    const listRequests: string[] = [];
-    blog.on('request', (request) => listRequests.push(request.url()));
-    await blog.goto(blogUrl);
-    const tagButton = blog.locator('#blog button').filter({ hasText: prefix });
-    await expect(tagButton).toContainText('52');
-    await tagButton.click();
-    await expect(blog.locator('#blog a[href^="/blog/"]')).toHaveCount(52);
-    expect(listRequests.some((url) => url.includes('/articles?page=2'))).toBe(true);
-    const link = blog.locator('#blog a[href="/blog/' + article.id + '"]');
-    await expect(link.locator('img')).toHaveAttribute('src', secondMedia.url);
-    await link.click();
-    await expect(blog.locator('article > div img').first()).toHaveAttribute('src', secondMedia.url);
+    await expect(blog.locator('#not-found-title')).toBeVisible();
     await patch('articles/' + article.id, { publishedAt: '2099-01-01T00:00:00Z' });
+    expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(404);
     await blog.reload();
-    await expect(blog.getByRole('heading', { name: 'Article not found' })).toBeVisible();
+    await expect(blog.locator('#not-found-title')).toBeVisible();
     await patch('articles/' + article.id, { publishedAt: '2026-01-01T00:00:00Z' });
     await page.getByLabel('文章状态').selectOption('DRAFT');
     await save();
     await blog.goto(`${blogUrl}/blog/${article.id}`);
-    await expect(blog.getByRole('heading', { name: 'Article not found' })).toBeVisible();
+    await expect(blog.locator('#not-found-title')).toBeVisible();
     await patch(`articles/${article.id}`, { status: 'ARCHIVED' });
     expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(404);
     await patch(`categories/${category.id}`, { isVisible: false });
@@ -355,7 +339,7 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
     await expect(blog.locator('#blog button').filter({ hasText: prefix })).toHaveCount(0);
     await expect(blog.locator('#blog a').filter({ hasText: prefix })).toHaveCount(0);
     checks.push(
-      'draft/publish/withdraw/archive/hidden category, numeric+slug URLs, sanitized HTML, TOC, related, 52 real rows across API pages, existing tag filter, scheduled publication',
+      'retained article management: draft/publish/withdraw/archive, API HTML sanitization, TOC, related and scheduled publication; retired visitor URLs return 404',
     );
 
     for (const record of records.filter((item) => item.resource === 'articles')) {

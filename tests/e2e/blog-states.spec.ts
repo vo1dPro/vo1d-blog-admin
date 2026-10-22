@@ -7,12 +7,10 @@ test('公开列表：加载、空列表、失败和重试不会显示静态内�
   test.setTimeout(90000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  for (const resource of ['books', 'games', 'photos', 'skills', 'articles']) {
+  for (const resource of ['books', 'games', 'photos', 'skills']) {
     const pattern = base + '/' + resource + '?*';
     const region =
-      resource === 'articles'
-        ? page.locator('#blog')
-        : resource === 'skills'
+      resource === 'skills'
           ? page.locator('#skills')
           : page.locator('#hobbies');
     await page.route(pattern, (route) =>
@@ -23,8 +21,6 @@ test('公开列表：加载、空列表、失败和重试不会显示静态内�
     if (resource === 'books') await expect(page.locator('.book-library')).toHaveCount(0);
     if (resource === 'games') await expect(page.locator('.game-showcase')).toHaveCount(0);
     if (resource === 'photos') await expect(page.locator('[data-photo-id]')).toHaveCount(0);
-    if (resource === 'articles')
-      await expect(page.locator('#blog a[href^="/blog/"]')).toHaveCount(0);
     await page.unroute(pattern);
     await page.route(pattern, (route) => route.fulfill({ status: 503, json: {} }));
     await page.reload();
@@ -51,57 +47,50 @@ test('公开列表：加载、空列表、失败和重试不会显示静态内�
   expect(errors).toEqual([]);
 });
 
-test('详情：错误与不存在分开，限流后重试，迟到响应不能覆盖新文章', async ({ page }) => {
-  test.setTimeout(90000);
-  for (const status of [503, 429, 204, 404]) {
-    const pattern = base + '/articles/1';
-    await page.route(pattern, (route) =>
-      route.fulfill({
-        status,
-        ...(status === 429 ? { headers: { 'Retry-After': '1' } } : {}),
-        ...(status === 204 ? {} : { json: {} }),
-      }),
-    );
-    await page.goto(blog + '/blog/1');
-    if (status === 404)
-      await expect(page.getByRole('heading', { name: 'Article not found' })).toBeVisible();
-    else {
-      await expect(page.locator('main [role="status"]')).toContainText(String(status));
-      await expect(page.getByRole('heading', { name: 'Article not found' })).toHaveCount(0);
-      await page.unroute(pattern);
-      await page.locator('main').getByRole('button', { name: 'Retry', exact: true }).click();
-      await expect(page.locator('.article-content')).toBeVisible();
-    }
-    await page.unroute(pattern);
-  }
-  let release: (() => void) | undefined;
-  const delayed = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  let started = false;
-  let cancelled = false;
-  page.on('requestfailed', (request) => {
-    if (request.url() === base + '/articles/1') cancelled = true;
-  });
-  await page.route(base + '/articles/1', async (route) => {
-    started = true;
-    await delayed;
-    await route.fulfill({ json: { id: 1, title: 'Late obsolete response' } }).catch(() => {});
-  });
+test('旧文章链接显示 404，不再请求文章接口', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
   await page.goto(blog + '/blog/1');
-  await expect(page.locator('main')).toContainText('Loading article');
-  await expect.poll(() => started).toBe(true);
-  await page.evaluate(() => {
-    history.pushState({}, '', '/blog/2');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+  await expect(page.locator('#not-found-title')).toBeVisible();
+  expect(requests.some(url => url.startsWith(base + '/articles'))).toBe(false);
+});
+
+test('动态列表空态、失败重试、完整分页及零值展示', async ({ page }) => {
+  let mode = 'empty';
+  const pattern = base + '/creations?*';
+  await page.addInitScript(() => sessionStorage.setItem('vo1d-blog:opening-seen', '1'));
+  await page.route(pattern, route => {
+    if (mode === 'error') return route.fulfill({ status: 503, json: {} });
+    const number = Number(new URL(route.request().url()).searchParams.get('page'));
+    if (mode === 'partial' && number === 2) return route.fulfill({ status: 503, json: {} });
+    const count = mode === 'empty' ? 0 : 51;
+    return route.fulfill({ json: {
+      version: 1, mode: 'live', updatedAt: '2026-10-22T00:00:00Z', page: number,
+      pageSize: 50, total: count, totalPages: count ? 2 : 0,
+      items: Array.from({ length: count ? (number === 1 ? 50 : 1) : 0 }, (_, index) => ({
+        id: String((number - 1) * 50 + index), platform: 'x',
+        sourceUrl: 'https://x.com/vo1dZzz/status/2112140462157132128',
+        author: { name: 'Test author', handle: 'vo1dZzz' }, publishedAt: '2026-10-21T00:00:00Z',
+        body: [{ kind: 'text', text: '分页测试动态' }], media: [],
+        metrics: { replies: 0, reposts: 1, quotes: 2, likes: 0, views: 9 },
+      })),
+    } });
   });
-  const article = (await (await page.request.get(base + '/articles/2')).json()) as {
-    title: string;
-  };
-  await expect(page.locator('h1').first()).toHaveText(article.title);
-  release?.();
-  await expect.poll(() => cancelled).toBe(true);
-  await expect(page.locator('h1').first()).toHaveText(article.title);
+  await page.goto(blog + '/#blog');
+  await expect(page.locator('#blog')).toContainText('还没有发布的动态。');
+  mode = 'error';
+  await page.reload();
+  await expect(page.locator('#blog')).toContainText('暂时无法加载动态。');
+  mode = 'partial';
+  await page.getByRole('button', { name: '重新加载', exact: true }).click();
+  await expect(page.locator('#blog')).toContainText('暂时无法加载动态。');
+  await expect(page.locator('.creation-card')).toHaveCount(0);
+  mode = 'success';
+  await page.getByRole('button', { name: '重新加载', exact: true }).click();
+  await expect(page.locator('.creation-card')).toHaveCount(51);
+  await expect(page.locator('.creation-stat-replies').first()).toHaveText('');
+  await expect(page.locator('.creation-stat-reposts').first()).toHaveText('3');
+  await expect(page.locator('.creation-stat-likes').first()).toHaveText('');
 });
 
 test('跨页完整读取，第二页失败和不一致响应不能被当作成功', async ({ page }) => {

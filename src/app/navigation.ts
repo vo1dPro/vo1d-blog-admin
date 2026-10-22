@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 export const navigation = [
   { path: '/', label: '概览', icon: House, group: '工作台' },
+  { path: '/creations', label: '创作动态', icon: CloudDownload, group: '内容管理' },
   { path: '/articles', label: '文章', icon: FileText, group: '内容管理' },
   { path: '/categories', label: '分类', icon: Folder, group: '内容管理' },
   { path: '/tags', label: '标签', icon: Tags, group: '内容管理' },

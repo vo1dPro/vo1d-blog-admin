@@ -15,6 +15,7 @@ import { SocialLinksPage, SocialEditor } from '../features/settings/SocialLinks'
 import { SitePage } from '../features/settings/SitePage';
 import { SteamPage } from '../features/steam/SteamPage';
 import { MediaPage } from '../features/media/MediaPage';
+import { CreationsPage } from '../features/creations/CreationsPage';
 function RouteError() {
   const error = useRouteError();
   return (
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
             element: <Layout />,
             children: [
               { index: true, element: <OverviewPage /> },
+              { path: 'creations', element: <CreationsPage /> },
               { path: 'articles', element: <ArticlesPage /> },
               { path: 'articles/:id', element: <ArticleEditor /> },
               { path: 'books', element: <BooksPage /> },
