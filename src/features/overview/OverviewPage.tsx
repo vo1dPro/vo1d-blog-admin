@@ -2,14 +2,19 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { ArrowRight, BookOpen, FileText, Gamepad2, Image, Plus, RefreshCw } from 'lucide-react';
 import { request, listPath, type Page } from '../../api/client';
-import type { Article } from '../../api/types';
+import type { CreationRow } from '../creations/row';
 import { Loading, ErrorNotice, Empty } from '../../components/feedback';
 import { TitleCell } from '../../components/CollectionPage';
 import { formatDate } from '../../lib/values';
-import { articleStatus } from '../articles/model';
 import { useSteamStatus } from '../steam/SteamPage';
 const counts = [
-  { resource: 'articles', title: '文章', icon: FileText, note: '想法与知识的积累', color: 'blue' },
+  {
+    resource: 'creations',
+    title: '创作动态',
+    icon: FileText,
+    note: '想法与知识的积累',
+    color: 'blue',
+  },
   { resource: 'books', title: '书籍', icon: BookOpen, note: '阅读是另一种旅行', color: 'amber' },
   { resource: 'games', title: '游戏', icon: Gamepad2, note: '收藏每一段冒险', color: 'violet' },
   { resource: 'photos', title: '照片', icon: Image, note: '留住生活的切片', color: 'green' },
@@ -22,9 +27,10 @@ export function OverviewPage() {
         request<Page<{ id: number }>>(listPath(`/admin/${item.resource}`, 1, 1), { signal }),
     })),
   });
-  const articles = useQuery({
-    queryKey: ['admin', 'articles', 'recent'],
-    queryFn: ({ signal }) => request<Page<Article>>(listPath('/admin/articles', 1, 5), { signal }),
+  const creations = useQuery({
+    queryKey: ['admin', 'creations', 'recent'],
+    queryFn: ({ signal }) =>
+      request<Page<CreationRow>>(listPath('/admin/creations', 1, 5), { signal }),
   });
   const steam = useSteamStatus();
   return (
@@ -35,9 +41,9 @@ export function OverviewPage() {
           <h1>概览</h1>
           <p>欢迎回来。每一份记录，都在构成你的个人空间。</p>
         </div>
-        <Link className="button primary" to="/articles/new">
+        <Link className="button primary" to="/creations">
           <Plus size={18} />
-          写一篇文章
+          导入推文
         </Link>
       </div>
       <div className="welcome-banner">
@@ -48,7 +54,7 @@ export function OverviewPage() {
             <br />
             让热爱有迹可循。
           </h2>
-          <p>从一篇文章、一本书，或一个值得记住的瞬间开始。</p>
+          <p>从一条动态、一本书，或一个值得记住的瞬间开始。</p>
           <Link to="/site-profile">
             整理我的站点 <ArrowRight size={16} />
           </Link>
@@ -101,34 +107,42 @@ export function OverviewPage() {
         <section className="panel table-panel">
           <div className="section-title inline">
             <div>
-              <h2>最近编辑</h2>
-              <p>继续上次的思考</p>
+              <h2>最近动态</h2>
+              <p>查看已导入的创作动态</p>
             </div>
-            <Link to="/articles">
-              全部文章 <ArrowRight size={15} />
+            <Link to="/creations">
+              全部动态 <ArrowRight size={15} />
             </Link>
           </div>
-          {articles.isPending ? (
+          {creations.isPending ? (
             <Loading />
-          ) : articles.isError ? (
+          ) : creations.isError ? (
             <ErrorNotice
-              error={articles.error}
+              error={creations.error}
               retry={() => {
-                void articles.refetch();
+                void creations.refetch();
               }}
             />
-          ) : articles.data.items.length === 0 ? (
-            <Empty text="从第一篇文章开始" />
+          ) : creations.data.items.length === 0 ? (
+            <Empty text="从导入第一条推文开始" />
           ) : (
             <div className="recent-list">
-              {articles.data.items.map((item) => (
-                <Link to={`/articles/${item.id}`} key={item.id}>
+              {creations.data.items.map((item) => (
+                <Link to="/creations" key={item.id}>
                   <TitleCell
-                    title={item.title}
-                    subtitle={formatDate(item.updatedAt)}
-                    image={item.cover.url}
+                    title={
+                      item.payload.title ||
+                      item.payload.body
+                        .map((part) => part.text)
+                        .join('')
+                        .slice(0, 100) ||
+                      item.payload.author.name
+                    }
+                    subtitle={formatDate(item.publishedAt)}
                   />
-                  <span className="badge">{articleStatus(item)}</span>
+                  <span className="badge">
+                    {{ x: 'X', douyin: '抖音', bilibili: '哔哩哔哩' }[item.platform]}
+                  </span>
                   <ArrowRight size={16} />
                 </Link>
               ))}
@@ -189,8 +203,8 @@ export function OverviewPage() {
               上传和管理素材
               <ArrowRight size={16} />
             </Link>
-            <Link to="/categories">
-              整理文章分类
+            <Link to="/creations">
+              管理创作动态
               <ArrowRight size={16} />
             </Link>
             <Link to="/site-profile">

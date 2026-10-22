@@ -1,23 +1,17 @@
 import {
   BookOpen,
-  FileText,
-  Folder,
   Gamepad2,
   House,
   Image,
   Layers,
   Link2,
   Settings2,
-  Tags,
   UserRound,
   CloudDownload,
 } from 'lucide-react';
 export const navigation = [
   { path: '/', label: '概览', icon: House, group: '工作台' },
   { path: '/creations', label: '创作动态', icon: CloudDownload, group: '内容管理' },
-  { path: '/articles', label: '文章', icon: FileText, group: '内容管理' },
-  { path: '/categories', label: '分类', icon: Folder, group: '内容管理' },
-  { path: '/tags', label: '标签', icon: Tags, group: '内容管理' },
   { path: '/books', label: '书籍', icon: BookOpen, group: '生活收藏' },
   { path: '/games', label: '游戏', icon: Gamepad2, group: '生活收藏' },
   { path: '/photos', label: '照片', icon: Image, group: '生活收藏' },
