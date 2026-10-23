@@ -214,7 +214,7 @@ function MediaItem({ media, expanded }: { media: CreationMedia; expanded: boolea
 
 function PhotoStrip({ items }: { items: CreationMedia[] }) {
   const track = useRef<HTMLDivElement>(null);
-  const pointer = useRef<{ x: number; y: number } | null>(null);
+  const pointer = useRef<{ x: number; y: number; scroll: number; id: number } | null>(null);
   const dragged = useRef(false);
   const [edges, setEdges] = useState({ start: true, end: false });
   const ratios = items.map((item) => (item.width && item.height ? item.width / item.height : 1));
@@ -247,23 +247,49 @@ function PhotoStrip({ items }: { items: CreationMedia[] }) {
     <div
       className="creation-media creation-photo-strip"
       style={{ '--photo-ratio': Math.max(...ratios) } as CSSProperties}
+      onDragStart={(event) => event.preventDefault()}
       onPointerDown={(event) => {
-        pointer.current = { x: event.clientX, y: event.clientY };
         dragged.current = false;
+        if (!event.isPrimary || event.button !== 0 || (event.target as Element).closest('button'))
+          return;
+        pointer.current = {
+          x: event.clientX,
+          y: event.clientY,
+          scroll: track.current?.scrollLeft ?? 0,
+          id: event.pointerId,
+        };
       }}
       onPointerMove={(event) => {
-        if (
-          pointer.current &&
-          Math.hypot(event.clientX - pointer.current.x, event.clientY - pointer.current.y) > 8
-        )
+        const start = pointer.current;
+        const element = track.current;
+        if (!start || start.id !== event.pointerId || !element) return;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8)
           dragged.current = true;
+        // Touch keeps native scrolling and momentum; mouse dragging scrolls explicitly.
+        if (event.pointerType === 'mouse' && dragged.current) {
+          event.preventDefault();
+          event.currentTarget.setPointerCapture(event.pointerId);
+          element.style.scrollSnapType = 'none';
+          element.scrollLeft = start.scroll - (event.clientX - start.x);
+        }
       }}
-      onPointerUp={() => {
+      onPointerUp={(event) => {
         pointer.current = null;
+        if (track.current) track.current.style.scrollSnapType = '';
+        if (event.currentTarget.hasPointerCapture(event.pointerId))
+          event.currentTarget.releasePointerCapture(event.pointerId);
       }}
       onPointerCancel={() => {
         pointer.current = null;
         dragged.current = true;
+        if (track.current) track.current.style.scrollSnapType = '';
+      }}
+      onLostPointerCapture={() => {
+        pointer.current = null;
+        if (track.current) track.current.style.scrollSnapType = '';
+      }}
+      onPointerLeave={() => {
+        if (!dragged.current) pointer.current = null;
       }}
       onClickCapture={(event) => {
         if (dragged.current) {

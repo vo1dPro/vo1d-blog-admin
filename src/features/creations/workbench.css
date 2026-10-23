@@ -277,7 +277,7 @@
   .editor-card {
     position: relative;
     min-width: 0;
-    min-height: 180px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
     background: var(--card);
@@ -295,6 +295,12 @@
     background: #f3f8ff;
   }
   .card-tools {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -319,12 +325,15 @@
     touch-action: none;
   }
   .card-scroll {
-    padding: 16px;
     overflow: auto;
     min-height: 0;
     flex: 1;
   }
   .card-bottom {
+    position: absolute;
+    z-index: 4;
+    bottom: 0;
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -341,35 +350,20 @@
     padding: 0 3px;
     font-size: 20px;
   }
-  .editor-card .creation-post {
-    padding-left: 44px;
+  .card-bottom > span {
+    display: none;
   }
-  .editor-card .creation-actions-wrap {
-    margin-left: 44px;
+  .editor-card:hover .card-tools,
+  .editor-card:focus-within .card-tools {
+    opacity: 1;
   }
-  .editor-card .creation-avatar {
-    width: 34px;
-    height: 34px;
+  .editor-card > .creation-actions-wrap {
+    flex-shrink: 0;
   }
-  .editor-card .creation-body {
-    font-size: 13px;
-    line-height: 1.6;
-  }
-  .editor-card .creation-name {
-    font-size: 13px;
-  }
-  .editor-card .creation-handle,
-  .editor-card .creation-time {
-    font-size: 12px;
-  }
-  .editor-card .creation-article-copy p {
-    font-size: 13px;
-  }
-  .editor-card .creation-article-copy h3 {
-    font-size: 16px;
-  }
-  .editor-card .creation-photo-track {
-    height: min(290px, calc(85cqw / var(--photo-ratio)));
+  .editor-card .creation-read-more {
+    padding: 2px 0;
+    border: 0;
+    background: transparent;
   }
   .editor-card .creation-quote p {
     display: -webkit-box;
@@ -505,6 +499,7 @@
   overflow: hidden;
 }
 .creation-workbench { container-type:inline-size; }
+.creation-workbench .creation-photo-track { user-select:none; }
 @container (max-width:1000px) {
  .creation-workbench .workspace-body { flex-direction:column; }
  .creation-workbench .workspace-body aside { width:100%; display:grid; grid-template-columns:1fr 1fr; gap:12px; }

@@ -62,6 +62,7 @@ test('layout workbench persists and drives visitor feed', async ({ page }) => {
       await page.getByRole('checkbox', { name }).check();
     }
     await page.getByRole('button', { name: '宽幅', exact: true }).click();
+    await page.locator('#card-height').fill('440');
     await page.getByRole('button', { name: '保存布局', exact: true }).click();
     await expect(page.getByText('已保存，访客页面刷新后生效')).toBeVisible();
     const saved = await (await page.request.get(endpoint)).json();
@@ -78,10 +79,53 @@ test('layout workbench persists and drives visitor feed', async ({ page }) => {
         .locator('.creation-card')
         .evaluateAll((es) => es.map((e) => e.getAttribute('data-postid'))),
     ).toEqual(chronological);
+    // Editor controls must not consume the saved card height or change post typography.
+    const editorCard = page.locator('.editor-card').first();
+    const visitorCard = second.locator('.creation-card').first();
+    await expect(editorCard).toHaveCSS('height', '440px');
+    await expect(visitorCard).toHaveCSS('height', '440px');
+    for (const [selector, property] of [
+      ['.creation-post', 'display'],
+      ['.creation-post', 'padding-left'],
+      ['.creation-body', 'font-size'],
+      ['.creation-body', 'line-height'],
+      ['.creation-avatar', 'width'],
+    ] as const) {
+      const expected = await editorCard
+        .locator(selector)
+        .first()
+        .evaluate((el, prop) => getComputedStyle(el).getPropertyValue(prop), property);
+      await expect(visitorCard.locator(selector).first()).toHaveCSS(property, expected);
+    }
+    for (const post of await second
+      .locator('.creation-card-medium > .creation-card-content > .creation-post')
+      .all()) {
+      await expect(post).toHaveCSS('display', 'flex');
+    }
     const tops = await second
       .locator('.creation-card')
       .evaluateAll((es) => es.map((e) => e.getBoundingClientRect().top));
     expect(tops.every((top, i) => i === 0 || top >= tops[i - 1]!)).toBe(true);
+    for (const targetPage of [page, second]) {
+      while (await targetPage.getByRole('button', { name: 'Show More', exact: true }).count()) {
+        await targetPage.getByRole('button', { name: 'Show More', exact: true }).click();
+      }
+      const track = targetPage.locator('.creation-photo-track').first();
+      await track.scrollIntoViewIfNeeded();
+      const box = await track.boundingBox();
+      if (!box) throw new Error('Photo track missing');
+      const start = await track.evaluate((el) => el.scrollLeft);
+      await targetPage.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.4);
+      await targetPage.mouse.down();
+      await targetPage.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.4, { steps: 12 });
+      expect(await track.evaluate((el) => el.scrollLeft)).toBeGreaterThan(start + 20);
+      await targetPage.mouse.up();
+      await expect(targetPage.locator('.creation-dialog[open]')).toHaveCount(0);
+      const previous = track.locator('..').getByRole('button', { name: '上一张照片' });
+      await expect(previous).toBeEnabled();
+      await previous.click();
+      await expect.poll(() => track.evaluate((el) => el.scrollLeft)).toBeLessThan(2);
+    }
     await second.getByRole('button', { name: '验证技术', exact: true }).click();
     await expect(second.locator('.creation-card')).toHaveCount(1);
     await expect(second.locator('.creation-card')).toHaveCSS('grid-column-start', 'span 8');

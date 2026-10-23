@@ -47,8 +47,8 @@ export function EditorCard({ post, entry, selected, editing, select, resize, upd
       )}
       <div className="card-scroll">
         <CreationContent post={post} />
-        <CreationActions post={post} />
       </div>
+      <CreationActions post={post} />
       {editing && (
         <div className="card-bottom">
           <span>
