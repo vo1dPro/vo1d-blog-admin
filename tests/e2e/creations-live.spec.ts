@@ -12,25 +12,50 @@ test('layout workbench persists and drives visitor feed', async ({ page }) => {
     const initial = await page.request.get(endpoint);
     expect(initial.status()).toBe(200);
     original = await initial.json();
+    const feed = await (
+      await page.request.get('http://localhost:3100/creations?page=1&pageSize=50')
+    ).json();
+    const chronological = feed.items.map(
+      (p: { platform: string; id: string }) => `${p.platform}:${p.id}`,
+    );
+    const reversed = {
+      ...(await initial.json()),
+      entries: feed.items
+        .map((p: { platform: string; id: string }) => ({
+          id: `${p.platform}:${p.id}`,
+          span: 1,
+          height: null,
+          categoryIds: [],
+        }))
+        .reverse(),
+    };
+    const seed = await page.request.put(endpoint, {
+      headers: { Origin: 'http://localhost:5174' },
+      data: reversed,
+    });
+    expect(seed.status()).toBe(200);
+    revision = (await seed.json()).revision;
     await page.goto('/creations');
     await expect(page.locator('.editor-card').first()).toBeVisible();
     const id = await page.locator('.editor-card').first().getAttribute('data-cardid');
-    const handle = await page.locator('.editor-card').first().getByLabel('拖动排序').boundingBox();
-    const target = await page.locator('.editor-card').nth(1).boundingBox();
-    if (!handle || !target) throw new Error('Drag controls missing');
-    await page.mouse.move(handle.x + 8, handle.y + 8);
+    expect(
+      await page
+        .locator('.editor-card')
+        .evaluateAll((es) => es.map((e) => e.getAttribute('data-cardid'))),
+    ).toEqual(chronological);
+    await expect(page.getByLabel('拖动排序')).toHaveCount(0);
+    const resizeCard = page.locator('.editor-card').nth(1);
+    await resizeCard.getByLabel('调整卡片大小').scrollIntoViewIfNeeded();
+    const resize = await resizeCard.getByLabel('调整卡片大小').boundingBox();
+    if (!resize) throw new Error('Resize control missing');
+    await page.mouse.move(resize.x + 5, resize.y + 5);
     await page.mouse.down();
-    await page.mouse.move(target.x + 50, target.y + 65, { steps: 10 });
+    await page.mouse.move(resize.x + 5, resize.y + 65, { steps: 8 });
     await page.mouse.up();
-    expect(await page.locator('.editor-card').first().getAttribute('data-cardid')).not.toBe(id);
+    expect(await resizeCard.getAttribute('style')).toMatch(/height: \d+px/);
     page.once('dialog', (d) => d.accept());
     await page.getByRole('button', { name: '放弃未保存修改' }).click();
-    const resizeCard=page.locator('.editor-card').nth(1);
-    await resizeCard.getByLabel('调整卡片大小').scrollIntoViewIfNeeded();
-    const resize=await resizeCard.getByLabel('调整卡片大小').boundingBox();if(!resize)throw new Error('Resize control missing');
-    await page.mouse.move(resize.x+5,resize.y+5);await page.mouse.down();await page.mouse.move(resize.x+5,resize.y+65,{steps:8});await page.mouse.up();
-    expect(await resizeCard.getAttribute('style')).toMatch(/height: \d+px/);
-    page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'放弃未保存修改'}).click();await page.locator('.editor-card').first().getByRole('button',{name:'编辑卡片'}).click();
+    await page.locator('.editor-card').first().getByRole('button', { name: '编辑卡片' }).click();
     for (const name of ['验证技术', '验证生活']) {
       await page.getByLabel('新分类名称').fill(name);
       await page.getByRole('button', { name: '添加', exact: true }).click();
@@ -47,6 +72,16 @@ test('layout workbench persists and drives visitor feed', async ({ page }) => {
     const second = await page.context().newPage();
     await second.addInitScript(() => sessionStorage.setItem('vo1d-blog:opening-seen', '1'));
     await second.goto('http://localhost:5173/#blog');
+    await expect(second.locator('.creation-card').first()).toBeVisible();
+    expect(
+      await second
+        .locator('.creation-card')
+        .evaluateAll((es) => es.map((e) => e.getAttribute('data-postid'))),
+    ).toEqual(chronological);
+    const tops = await second
+      .locator('.creation-card')
+      .evaluateAll((es) => es.map((e) => e.getBoundingClientRect().top));
+    expect(tops.every((top, i) => i === 0 || top >= tops[i - 1]!)).toBe(true);
     await second.getByRole('button', { name: '验证技术', exact: true }).click();
     await expect(second.locator('.creation-card')).toHaveCount(1);
     await expect(second.locator('.creation-card')).toHaveCSS('grid-column-start', 'span 8');

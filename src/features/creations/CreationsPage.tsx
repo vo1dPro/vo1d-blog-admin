@@ -47,15 +47,14 @@ export function CreationsPage() {
     [filter, setFilter] = useState('all'),
     [selected, setSelected] = useState('');
   const [preview, setPreview] = useState(false),
-    [phone, setPhone] = useState(false),
-    [dropTarget, setDropTarget] = useState('');
+    [phone, setPhone] = useState(false);
   const [loaded, setLoaded] = useState(false),
     [url, setUrl] = useState(''),
     [importing, setImporting] = useState(false);
   const [rows, setRows] = useState<CreationRow[]>([]);
   const board = useRef<HTMLDivElement>(null),
     gesture = useRef<{
-      type: 'drag' | 'resize';
+      type: 'resize';
       id: string;
       target?: string;
       x: number;
@@ -127,10 +126,8 @@ export function CreationsPage() {
         readFeed(),
         api<LayoutConfig>('/admin/creations/layout'),
       ]);
-      const current = new Set(feed.items.map(keyOf));
-      const entries = layout.entries.filter((entry) => current.has(entry.id));
-      const known = new Set(entries.map((entry) => entry.id));
-      entries.push(...feed.items.filter((post) => !known.has(keyOf(post))).map(defaults));
+      const previous = new Map(layout.entries.map((entry) => [entry.id, entry]));
+      const entries = feed.items.map((post) => previous.get(keyOf(post)) ?? defaults(post));
       const merged = { ...layout, entries };
       setPosts(feed.items);
       setRows(feed.rows);
@@ -164,25 +161,6 @@ export function CreationsPage() {
       entries: d.entries.map((entry) => (entry.id === id ? { ...entry, ...values } : entry)),
     }));
   }
-  function reorder(id: string, target?: string) {
-    if (!target || id === target) return;
-    change((d) => {
-      const entries = [...d.entries],
-        from = entries.findIndex((e) => e.id === id),
-        to = entries.findIndex((e) => e.id === target);
-      if (from < 0 || to < 0) return d;
-      const moved = entries.splice(from, 1)[0];
-      if (moved) entries.splice(to, 0, moved);
-      return { ...d, entries };
-    });
-    setNotice('顺序已调整，保存后生效');
-  }
-  function drag(event: PointerEvent<HTMLButtonElement>, id: string) {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setSelected(id);
-    gesture.current = { type: 'drag', id, target: '', x: event.clientX, y: event.clientY };
-  }
   function resize(event: PointerEvent<HTMLButtonElement>, id: string, node: HTMLElement | null) {
     if (!node || !board.current) return;
     event.preventDefault();
@@ -209,21 +187,9 @@ export function CreationsPage() {
         ),
         height: Math.max(180, Math.min(1000, Math.round((g.height ?? 400) + event.clientY - g.y))),
       });
-    else {
-      const target = document
-        .elementFromPoint(event.clientX, event.clientY)
-        ?.closest<HTMLElement>('[data-cardid]')?.dataset.cardid;
-      g.target = target && target !== g.id ? target : '';
-      setDropTarget(g.target);
-      if (event.clientY > innerHeight - 70) window.scrollBy(0, 18);
-      if (event.clientY < 90) window.scrollBy(0, -18);
-    }
   }
   function pointerEnd() {
-    const g = gesture.current;
-    if (g?.type === 'drag') reorder(g.id, g.target);
     gesture.current = null;
-    setDropTarget('');
   }
   async function save() {
     setSaving(true);
@@ -260,12 +226,19 @@ export function CreationsPage() {
   }
   const entry = draft?.entries.find((e) => e.id === selected);
   const selectedPost = posts.find((p) => keyOf(p) === selected);
-  const visible =
-    draft?.entries.filter(
+  const orderedPosts = [...posts].sort(
+    (a, b) =>
+      Date.parse(b.publishedAt) - Date.parse(a.publishedAt) ||
+      `${b.platform}:${b.id}`.localeCompare(`${a.platform}:${a.id}`, 'en', { numeric: true }),
+  );
+  const visible = orderedPosts
+    .map((post) => draft.entries.find((e) => e.id === keyOf(post)))
+    .filter((e): e is LayoutEntry => Boolean(e))
+    .filter(
       (e) =>
         filter === 'all' ||
         (filter === 'none' ? !e.categoryIds.length : e.categoryIds.includes(filter)),
-    ) ?? [];
+    );
   return (
     <div className="creation-workbench">
       <div
@@ -274,7 +247,6 @@ export function CreationsPage() {
         onPointerUp={pointerEnd}
         onPointerCancel={() => {
           gesture.current = null;
-          setDropTarget('');
         }}
       >
         <header className="topbar">
@@ -516,8 +488,8 @@ export function CreationsPage() {
                   <h2>{preview ? '访客布局预览' : '把内容摆到合适的位置'}</h2>
                   <p>
                     {preview
-                      ? '分类共享一套顺序和尺寸；手机端自动单列。'
-                      : '拖动 ⠿ 排序，拖右下角 ↘ 调整大小。也可用箭头按钮和方向键。'}
+                      ? '按发布时间从新到旧排列；手机端自动单列。'
+                      : '按发布时间从新到旧排列。拖动右下角 ↘ 调整占地大小，顺序保持不变。'}
                   </p>
                 </div>
                 <button aria-pressed={phone} onClick={() => setPhone(!phone)}>
@@ -547,7 +519,7 @@ export function CreationsPage() {
                 ref={board}
                 className={`layout-board ${phone ? 'phone' : ''} ${preview ? 'preview' : ''}`}
               >
-                {visible.map((item, index) => (
+                {visible.map((item) => (
                   <EditorCard
                     key={item.id}
                     post={posts.find((p) => keyOf(p) === item.id)!}
@@ -555,13 +527,8 @@ export function CreationsPage() {
                     editing={!preview}
                     selected={item.id === selected}
                     select={setSelected}
-                    dropTarget={dropTarget === item.id}
-                    drag={drag}
                     resize={resize}
                     update={update}
-                    first={index === 0}
-                    last={index === visible.length - 1}
-                    move={(id, delta) => reorder(id, visible[index + delta]?.id)}
                   />
                 ))}
               </div>

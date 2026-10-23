@@ -8,67 +8,40 @@ interface CardProps {
   entry: LayoutEntry;
   selected: boolean;
   editing: boolean;
-  dropTarget: boolean;
-  first: boolean;
-  last: boolean;
   select: (id: string) => void;
   resize: (event: PointerEvent<HTMLButtonElement>, id: string, node: HTMLElement | null) => void;
-  drag: (event: PointerEvent<HTMLButtonElement>, id: string) => void;
-  move: (id: string, delta: number) => void;
   update: (id: string, values: Partial<LayoutEntry>) => void;
 }
-export function EditorCard({
-  post,
-  entry,
-  selected,
-  editing,
-  dropTarget,
-  select,
-  resize,
-  drag,
-  move,
-  update,
-  first,
-  last,
-}: CardProps) {
+export function EditorCard({ post, entry, selected, editing, select, resize, update }: CardProps) {
   const ref = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const node = ref.current;
     if (!node) return;
+    let frame = 0;
     const measure = () => {
-      node.style.gridRowEnd = `span ${Math.ceil(node.getBoundingClientRect().height + 16)}`;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const span = `span ${Math.ceil(node.getBoundingClientRect().height + 16)}`;
+        if (node.style.gridRowEnd !== span) node.style.gridRowEnd = span;
+      });
     };
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     measure();
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
   }, []);
   return (
     <article
       ref={ref}
       data-cardid={entry.id}
       data-span={entry.span}
-      className={`editor-card ${selected && editing ? 'selected' : ''} ${dropTarget ? 'drop-target' : ''}`}
+      className={`editor-card ${selected && editing ? 'selected' : ''}`}
       style={{ gridColumn: `span ${entry.span}`, height: entry.height ?? 'auto' }}
     >
       {editing && (
         <div className="card-tools">
-          <button
-            className="drag-handle"
-            aria-label="拖动排序"
-            title="拖动排序"
-            onPointerDown={(event) => drag(event, entry.id)}
-          >
-            ⠿
-          </button>
           <button className="select-card" aria-pressed={selected} onClick={() => select(entry.id)}>
             编辑卡片
-          </button>
-          <button aria-label="前移" disabled={first} onClick={() => move(entry.id, -1)}>
-            ↑
-          </button>
-          <button aria-label="后移" disabled={last} onClick={() => move(entry.id, 1)}>
-            ↓
           </button>
         </div>
       )}
@@ -115,4 +88,3 @@ export function EditorCard({
     </article>
   );
 }
-
