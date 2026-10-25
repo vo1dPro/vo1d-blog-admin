@@ -52,6 +52,7 @@ export function CreationsPage() {
     [url, setUrl] = useState(''),
     [importing, setImporting] = useState(false);
   const [rows, setRows] = useState<CreationRow[]>([]);
+  const [renaming, setRenaming] = useState<{ id: string; name: string } | null>(null);
   const board = useRef<HTMLDivElement>(null),
     gesture = useRef<{
       type: 'resize';
@@ -353,43 +354,88 @@ export function CreationsPage() {
                   <div className="category-list">
                     {draft.categories.map((category) => (
                       <div className="category-row" key={category.id}>
-                        <span>{category.name}</span>
-                        <small>
-                          {draft.entries.filter((e) => e.categoryIds.includes(category.id)).length}
-                        </small>
-                        <button
-                          aria-label={`重命名 ${category.name}`}
-                          onClick={() => {
-                            const value = prompt('分类名称', category.name);
-                            if (value !== null && categoryNameValid(value, category.id))
+                        {renaming?.id === category.id ? (
+                          <form
+                            className="category-rename"
+                            onSubmit={(event) => {
+                              event.preventDefault();
+                              if (!categoryNameValid(renaming.name, category.id)) return;
                               change((d) => ({
                                 ...d,
                                 categories: d.categories.map((c) =>
-                                  c.id === category.id ? { ...c, name: value.trim() } : c,
+                                  c.id === category.id ? { ...c, name: renaming.name.trim() } : c,
                                 ),
                               }));
-                          }}
-                        >
-                          改名
-                        </button>
-                        <button
-                          aria-label={`删除分类 ${category.name}`}
-                          onClick={() => {
-                            if (!confirm(`删除“${category.name}”？推文会保留，只解除该分类关系。`))
-                              return;
-                            change((d) => ({
-                              ...d,
-                              categories: d.categories.filter((c) => c.id !== category.id),
-                              entries: d.entries.map((e) => ({
-                                ...e,
-                                categoryIds: e.categoryIds.filter((id) => id !== category.id),
-                              })),
-                            }));
-                            if (filter === category.id) setFilter('all');
-                          }}
-                        >
-                          ×
-                        </button>
+                              setRenaming(null);
+                            }}
+                          >
+                            <input
+                              aria-label="分类名称"
+                              autoFocus
+                              maxLength={30}
+                              value={renaming.name}
+                              onFocus={(event) => event.currentTarget.select()}
+                              onChange={(event) =>
+                                setRenaming({ id: category.id, name: event.target.value })
+                              }
+                              onKeyDown={(event) => {
+                                if (event.key === 'Escape') {
+                                  setRenaming(null);
+                                  setError('');
+                                }
+                              }}
+                            />
+                            <button type="submit">确认</button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setRenaming(null);
+                                setError('');
+                              }}
+                            >
+                              取消
+                            </button>
+                          </form>
+                        ) : (
+                          <>
+                            <span>{category.name}</span>
+                            <small>
+                              {
+                                draft.entries.filter((e) => e.categoryIds.includes(category.id))
+                                  .length
+                              }
+                            </small>
+                            <button
+                              aria-label={`重命名 ${category.name}`}
+                              onClick={() => {
+                                setError('');
+                                setRenaming({ id: category.id, name: category.name });
+                              }}
+                            >
+                              改名
+                            </button>
+                            <button
+                              aria-label={`删除分类 ${category.name}`}
+                              onClick={() => {
+                                if (
+                                  !confirm(`删除“${category.name}”？推文会保留，只解除该分类关系。`)
+                                )
+                                  return;
+                                change((d) => ({
+                                  ...d,
+                                  categories: d.categories.filter((c) => c.id !== category.id),
+                                  entries: d.entries.map((e) => ({
+                                    ...e,
+                                    categoryIds: e.categoryIds.filter((id) => id !== category.id),
+                                  })),
+                                }));
+                                if (filter === category.id) setFilter('all');
+                              }}
+                            >
+                              ×
+                            </button>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
