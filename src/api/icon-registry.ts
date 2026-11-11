@@ -1,7 +1,7 @@
 import { allPages } from './client';
 import type { Skill, SocialLink } from './types';
 
-export type IconPair = Pick<Skill, 'icon' | 'darkIcon'>;
+type IconPair = Pick<Skill, 'icon' | 'darkIcon'>;
 
 // Compatibility keys only; image URLs and theme variants always come from the backend.
 const aliases: Record<string, string> = {

@@ -7,7 +7,7 @@ import { refreshContent } from '../api/query';
 import { ConfirmDialog, Empty, ErrorNotice, Loading, Modal } from './feedback';
 import { Pagination } from './pagination';
 
-export interface Column<T> {
+interface Column<T> {
   title: string;
   render: (item: T) => ReactNode;
 }

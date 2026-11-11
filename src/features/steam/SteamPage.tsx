@@ -43,7 +43,7 @@ export function syncUnavailable(status: SteamStatus, now = Date.now()) {
       new Date(status.nextSyncAt).getTime() > now)
   );
 }
-export function SteamSummary({ status }: { status: SteamStatus }) {
+function SteamSummary({ status }: { status: SteamStatus }) {
   return (
     <dl className="detail-grid">
       <div>

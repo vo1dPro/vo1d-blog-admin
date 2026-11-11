@@ -13,7 +13,7 @@ import {
 import type { Creation, CreationAuthor, CreationMedia, CreationPlatform } from './model';
 import { creationPlatforms } from './model';
 
-export function PlatformIcon({ platform }: { platform: CreationPlatform }) {
+function PlatformIcon({ platform }: { platform: CreationPlatform }) {
   if (platform !== 'x')
     return <span className="creation-platform-word">{creationPlatforms[platform].label}</span>;
   return (
@@ -85,7 +85,7 @@ function ProfileLink({
   );
 }
 
-export function Author({
+function Author({
   author,
   publishedAt,
   href,
