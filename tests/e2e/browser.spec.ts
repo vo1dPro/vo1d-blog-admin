@@ -22,7 +22,7 @@ test('会话失效清除后台，禁止外部登录跳转', async ({ page }) => 
   await expect(page.getByRole('heading', { name: '游戏' })).toBeVisible();
   await expect(page.getByText('测试游戏', { exact: true })).toBeVisible();
   state.expired = true;
-  await page.getByRole('link', { name: '文章', exact: true }).click();
+  await page.getByRole('link', { name: '书籍', exact: true }).click();
   await expect(page).toHaveURL(/login/);
   await expect(page.getByText('测试游戏', { exact: true })).toHaveCount(0);
   state.expired = false;
@@ -35,15 +35,17 @@ test('会话失效清除后台，禁止外部登录跳转', async ({ page }) => 
 });
 test('列表分页、空状态、失败与重试', async ({ page }) => {
   const state = await mockApi(page);
-  state.data.tags = Array.from({ length: 12 }, (_, index) => ({
+  state.data.skills = Array.from({ length: 12 }, (_, index) => ({
     id: index + 1,
-    name: `标签-${index + 1}`,
-    slug: `tag-${index + 1}`,
+    name: `技能-${index + 1}`,
+    iconKey: 'custom',
+    sortOrder: index,
+    isVisible: true,
   }));
-  await page.goto('/tags');
+  await page.goto('/skills');
   await page.getByRole('button', { name: '下一页', exact: true }).click();
-  await expect(page.getByText('标签-12', { exact: true })).toBeVisible();
-  await expect(page.getByText('标签-1', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('技能-12', { exact: true })).toBeVisible();
+  await expect(page.getByText('技能-1', { exact: true })).toHaveCount(0);
   await page.route('**/admin/books?**', (route) =>
     respond(route, { message: 'temporarily unavailable' }, 503),
   );
@@ -55,71 +57,42 @@ test('列表分页、空状态、失败与重试', async ({ page }) => {
 });
 test('创建、409 保留输入、编辑与删除 204', async ({ page }) => {
   const state = await mockApi(page);
-  await page.goto('/tags/new');
-  await page.getByLabel('标签名称', { exact: true }).fill('新的标签');
-  await page.getByLabel('slug', { exact: true }).fill('new-tag');
-  await page.route('**/admin/tags', async (route) => {
+  await page.goto('/skills/new');
+  await page.getByLabel('技能名称', { exact: true }).fill('新的技能');
+  await page.route('**/admin/skills', async (route) => {
     if (route.request().method() === 'POST')
-      await respond(route, { message: 'slug already exists' }, 409);
+      await respond(route, { message: 'name already exists' }, 409);
     else await route.fallback();
   });
   await page.getByRole('button', { name: '创建并保存' }).click();
-  await expect(page.getByRole('alert')).toContainText('slug already exists');
-  await expect(page.getByLabel('标签名称', { exact: true })).toHaveValue('新的标签');
-  await page.unroute('**/admin/tags');
+  await expect(page.getByRole('alert')).toContainText('name already exists');
+  await expect(page.getByLabel('技能名称', { exact: true })).toHaveValue('新的技能');
+  await page.unroute('**/admin/skills');
   await page.getByRole('button', { name: '创建并保存' }).click();
-  await expect(page).toHaveURL(/\/tags\/101$/);
-  await page.getByLabel('标签名称', { exact: true }).fill('更新标签');
+  await expect(page).toHaveURL(/\/skills\/101$/);
+  await page.getByLabel('技能名称', { exact: true }).fill('更新技能');
   await page.getByRole('button', { name: '保存更改' }).click();
   await expect(page.getByRole('status')).toContainText('保存成功');
-  expect(state.writes.at(-1)?.body).toEqual({ name: '更新标签' });
+  expect(state.writes.at(-1)?.body).toEqual({ name: '更新技能' });
   await page.getByRole('button', { name: '返回列表' }).click();
-  await page.getByRole('button', { name: '删除 更新标签' }).click();
-  await expect(page.getByRole('dialog')).toContainText('所有文章的关联');
+  await page.getByRole('button', { name: '删除 更新技能' }).click();
+  await expect(page.getByRole('dialog')).toContainText('已上传图片仍保留在媒体库');
   await page.getByRole('button', { name: '确认', exact: true }).click();
-  await expect(page.getByText('更新标签', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('更新技能', { exact: true })).toHaveCount(0);
 });
-test('未保存提醒与危险 Markdown 预览', async ({ page }) => {
+test('未保存提醒', async ({ page }) => {
   await mockApi(page);
-  await page.goto('/articles/1');
-  await page
-    .getByLabel('Markdown 正文')
-    .fill(
-      '<script>window.hacked=1</script>\n<img src=x onerror="window.hacked=2">\n\n[evil](javascript:alert%281%29)\n\n# 安全标题',
-    );
-  await page.getByRole('button', { name: '安全预览' }).click();
-  await expect(page.getByTestId('markdown-preview')).toContainText('安全标题');
-  expect(await page.evaluate(() => 'hacked' in window)).toBe(false);
-  expect(
-    await page
-      .getByTestId('markdown-preview')
-      .locator('script,[onerror],a[href^="javascript:"]')
-      .count(),
-  ).toBe(0);
+  await page.goto('/games/1');
+  await page.getByLabel('游戏标题', { exact: true }).fill('未保存的标题');
   await page.getByRole('link', { name: '书籍', exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('未保存更改');
   await page.getByRole('button', { name: '取消', exact: true }).last().click();
-  await expect(page).toHaveURL('/articles/1');
+  await expect(page).toHaveURL('/games/1');
 });
-test('分类、标签、媒体选择器加载多页', async ({ page }) => {
+test('媒体选择器加载多页', async ({ page }) => {
   const state = await mockApi(page);
-  const first = state.data.categories?.[0];
-  if (!first) throw new Error('Fixture missing');
-  state.data.categories = Array.from({ length: 51 }, (_, i) => ({
-    ...first,
-    id: i + 1,
-    label: `分类${i + 1}`,
-    key: `category-${i + 1}`,
-  }));
-  state.data.tags = Array.from({ length: 51 }, (_, i) => ({
-    id: i + 1,
-    name: `标签${i + 1}`,
-    slug: `tag-${i + 1}`,
-  }));
   state.data.media = Array.from({ length: 51 }, (_, i) => ({ ...medium, id: i + 1 }));
-  await page.goto('/articles/new');
-  await expect(page.getByRole('option', { name: '分类51', exact: true })).toHaveCount(1);
-  await expect(page.getByLabel('标签51', { exact: true })).toBeVisible();
+  await page.goto('/books/new');
   await page.getByRole('button', { name: '选择封面' }).click();
   await expect(page.getByRole('button', { name: '选择素材 51', exact: true })).toHaveCount(1);
   await page.getByRole('button', { name: '选择素材 51', exact: true }).click();
@@ -142,25 +115,24 @@ test('Steam 关联翻页、解除关联、自定义时长与只读字段保护',
 });
 test('全局排序包含后续页，失败恢复并可重试保存', async ({ page }) => {
   const state = await mockApi(page);
-  const first = state.data.categories?.[0];
-  if (!first) throw new Error('Fixture missing');
-  state.data.categories = Array.from({ length: 12 }, (_, i) => ({
-    ...first,
+  state.data.skills = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
-    label: `分类${i + 1}`,
+    name: `技能${i + 1}`,
+    iconKey: 'custom',
     sortOrder: i,
+    isVisible: true,
   }));
-  await page.goto('/categories');
+  await page.goto('/skills');
   await page.getByRole('button', { name: '调整顺序' }).click();
-  await expect(page.getByRole('dialog').getByText('12. 分类12')).toBeVisible();
+  await expect(page.getByRole('dialog').getByText('12. 技能12')).toBeVisible();
   await page.getByRole('button', { name: '下移 1', exact: true }).click();
-  await page.route('**/admin/categories/reorder', (route) =>
+  await page.route('**/admin/skills/reorder', (route) =>
     respond(route, { message: 'conflict' }, 409),
   );
   await page.getByRole('button', { name: '保存顺序' }).click();
   await expect(page.getByRole('dialog').getByRole('alert')).toBeVisible();
-  await expect(page.getByRole('dialog').locator('li').first()).toContainText('分类1');
-  await page.unroute('**/admin/categories/reorder');
+  await expect(page.getByRole('dialog').locator('li').first()).toContainText('技能1');
+  await page.unroute('**/admin/skills/reorder');
   await page.getByRole('button', { name: '下移 1', exact: true }).click();
   await page.getByRole('button', { name: '保存顺序' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);

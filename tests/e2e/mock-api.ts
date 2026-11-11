@@ -13,16 +13,6 @@ export const medium = {
   kind: 'IMAGE',
   createdAt: date,
 };
-export const category = {
-  id: 1,
-  key: 'technology',
-  label: '技术',
-  iconKey: 'Code2',
-  sortOrder: 0,
-  isVisible: true,
-  createdAt: date,
-  updatedAt: date,
-};
 export const game = {
   id: 1,
   title: '测试游戏',
@@ -50,26 +40,6 @@ export const game = {
   createdAt: date,
   updatedAt: date,
 };
-export const article = {
-  id: 1,
-  title: '测试文章',
-  slug: 'test-article',
-  summary: '摘要',
-  bodyMarkdown: '# 测试标题',
-  categoryId: 1,
-  category,
-  tags: [],
-  tagIds: [],
-  coverMediaId: 1,
-  cover: medium,
-  status: 'DRAFT',
-  publishedAt: null,
-  readingTimeMinutes: 5,
-  seoTitle: null,
-  seoDescription: null,
-  createdAt: date,
-  updatedAt: date,
-};
 type Row = { id: number; [key: string]: unknown };
 export interface MockState {
   authenticated: boolean;
@@ -94,12 +64,6 @@ export async function mockApi(page: Page, authenticated = true) {
     expired: false,
     writes: [],
     data: {
-      articles: [structuredClone(article)],
-      categories: [
-        structuredClone(category),
-        { ...category, id: 2, key: 'life', label: '生活', sortOrder: 1 },
-      ],
-      tags: [{ id: 1, name: '标签一', slug: 'tag-one' }],
       games: [structuredClone(game)],
       books: [],
       photos: [],

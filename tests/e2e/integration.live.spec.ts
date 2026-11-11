@@ -19,7 +19,7 @@ async function all(api: APIRequestContext, resource: string): Promise<{ id: numb
   }
 }
 
-test('三项目真实联动：资料、书籍媒体与排序、照片撤回、文章发布筛选分页详情及恢复', async ({
+test('三项目真实联动：资料、书籍媒体与排序、照片撤回', async ({
   page,
   context,
   browser,
@@ -64,9 +64,6 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
     for (const resource of [
       'books',
       'photos',
-      'articles',
-      'categories',
-      'tags',
       'media',
       'games',
       'skills',
@@ -265,88 +262,6 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
       'photo original/thumbnail replacement, dialog and Escape, hide/delete after refresh',
     );
 
-    const category = await create('categories', {
-      key: prefix,
-      label: prefix,
-      iconKey: 'Folder',
-      sortOrder: 999999,
-    });
-    const tag = await create('tags', { slug: prefix, name: prefix });
-    const article = await create('articles', {
-      slug: prefix,
-      title: prefix,
-      summary: '文章真实联动',
-      bodyMarkdown: '# 章节一\n\n正文一\n\n## 章节二\n\n正文二\n\n<script>window.hacked=1</script>',
-      categoryId: category.id,
-      tagIds: [tag.id],
-      coverMediaId: firstMedia.id,
-      readingTimeMinutes: 1,
-      status: 'DRAFT',
-    });
-    await blog.goto(`${blogUrl}/blog/${article.id}`);
-    await expect(blog.locator('#not-found-title')).toBeVisible();
-    await page.goto(`/articles/${article.id}`);
-    await page.getByLabel('文章状态').selectOption('PUBLISHED');
-    await page.getByLabel('发布时间', { exact: true }).fill('2026-01-01T12:00');
-    await save();
-    for (let index = 0; index < 51; index++)
-      await create('articles', {
-        slug: `${prefix}-${index}`,
-        title: `${prefix}-${index}`,
-        summary: '分页联动',
-        bodyMarkdown: '# 同类文章',
-        categoryId: category.id,
-        tagIds: [tag.id],
-        coverMediaId: firstMedia.id,
-        readingTimeMinutes: 1,
-        status: 'PUBLISHED',
-        publishedAt: '2026-01-01T00:00:00Z',
-      });
-    await blog.reload();
-    expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(200);
-    await page
-      .getByLabel('Markdown 正文')
-      .fill('# 章节一\n\n正文已更新\n\n## 章节二\n\n<script>window.hacked=1</script>');
-    await page.getByRole('button', { name: '选择封面', exact: true }).click();
-    await page.getByRole('button', { name: `选择素材 ${secondMedia.id}`, exact: true }).click();
-    await save();
-    await blog.reload();
-    // Article management remains supported by the API; its visitor UI was retired.
-    const detail = await (await visitor.request.get(`${base}/articles/${article.id}`)).json() as {
-      contentHtml: string; toc: unknown[]; cover: { url: string };
-    };
-    expect(detail.contentHtml).toContain('正文已更新');
-    expect(detail.contentHtml).not.toContain('<script');
-    expect(detail.toc).toHaveLength(2);
-    expect(detail.cover.url).toBe(secondMedia.url);
-    const related = await (await visitor.request.get(`${base}/articles/${article.id}/related?limit=3`)).json() as { items: unknown[] };
-    expect(related.items).toHaveLength(3);
-    await blog.goto(`${blogUrl}/blog/${prefix}`);
-    await expect(blog.locator('#not-found-title')).toBeVisible();
-    await patch('articles/' + article.id, { publishedAt: '2099-01-01T00:00:00Z' });
-    expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(404);
-    await blog.reload();
-    await expect(blog.locator('#not-found-title')).toBeVisible();
-    await patch('articles/' + article.id, { publishedAt: '2026-01-01T00:00:00Z' });
-    await page.getByLabel('文章状态').selectOption('DRAFT');
-    await save();
-    await blog.goto(`${blogUrl}/blog/${article.id}`);
-    await expect(blog.locator('#not-found-title')).toBeVisible();
-    await patch(`articles/${article.id}`, { status: 'ARCHIVED' });
-    expect((await visitor.request.get(`${base}/articles/${prefix}`)).status()).toBe(404);
-    await patch(`categories/${category.id}`, { isVisible: false });
-    await blog.goto(blogUrl);
-    await expect(blog.locator('#blog button').filter({ hasText: prefix })).toHaveCount(0);
-    await expect(blog.locator('#blog a').filter({ hasText: prefix })).toHaveCount(0);
-    checks.push(
-      'retained article management: draft/publish/withdraw/archive, API HTML sanitization, TOC, related and scheduled publication; retired visitor URLs return 404',
-    );
-
-    for (const record of records.filter((item) => item.resource === 'articles')) {
-      expect((await api.delete(base + '/admin/articles/' + record.id, { headers })).status()).toBe(
-        204,
-      );
-    }
     // Restore shared profile before capturing final visual evidence.
     await patch('site-profile', restoreProfile);
     await blog.goto(blogUrl);
@@ -377,11 +292,8 @@ test('三项目真实联动：资料、书籍媒体与排序、照片撤回、�
     checks.push('desktop/mobile light/dark without overflow or browser exceptions');
   } finally {
     const order: Record<string, number> = {
-      articles: 0,
       books: 0,
       photos: 0,
-      tags: 1,
-      categories: 2,
     };
     records.sort((a, b) => (order[a.resource] ?? 0) - (order[b.resource] ?? 0));
     try {

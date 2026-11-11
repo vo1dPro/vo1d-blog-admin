@@ -1,12 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { createElement } from 'react';
 import { allPages, ApiError, request, setUnauthorizedHandler } from '../../src/api/client';
 import { gameInitial, gameSchema } from '../../src/features/games/model';
-import { articleInitial, articleSchema } from '../../src/features/articles/model';
 import { bookInitial, bookSchema } from '../../src/features/books/model';
 import { photoInitial, photoSchema } from '../../src/features/photos/model';
-import { MarkdownPreview } from '../../src/features/articles/MarkdownPreview';
 import { changedFields, safeReturnTo, toIsoDateTime, toLocalDateTime } from '../../src/lib/values';
 import { reorderPayload } from '../../src/components/CollectionPage';
 import { uploadImage, validateImage } from '../../src/features/media/upload-image';
@@ -70,7 +66,7 @@ describe('HTTP contract', () => {
         .mockResolvedValueOnce(json({ items: [{ id: 1 }], totalPages: 2 }))
         .mockResolvedValueOnce(json({}, 503)),
     );
-    await expect(allPages('/admin/categories')).rejects.toMatchObject({ status: 503 });
+    await expect(allPages('/admin/games')).rejects.toMatchObject({ status: 503 });
   });
 });
 describe('writable DTOs and meaningful empty values', () => {
@@ -130,22 +126,6 @@ describe('writable DTOs and meaningful empty values', () => {
     ])
       expect(gameSchema.safeParse({ ...initial, ...change }).success).toBe(false);
   });
-  it('requires a timestamp for publishing, permits future scheduling', () => {
-    const article = {
-      ...articleInitial(),
-      title: 'T',
-      slug: 'test',
-      summary: 'S',
-      bodyMarkdown: '# T',
-      categoryId: 1,
-      coverMediaId: 1,
-      status: 'PUBLISHED' as const,
-    };
-    expect(articleSchema.safeParse(article).success).toBe(false);
-    expect(
-      articleSchema.parse({ ...article, publishedAt: '2099-01-01T12:00' }).publishedAt,
-    ).toMatch(/Z$/);
-  });
   it('turns blank book source and dates into null without changing progress 0', () => {
     const book = bookSchema.parse({
       ...bookInitial(),
@@ -184,21 +164,9 @@ describe('writable DTOs and meaningful empty values', () => {
     (value) => expect(safeReturnTo(value)).toBe('/'),
   );
   it('preserves internal return paths', () =>
-    expect(safeReturnTo('/articles/3?tab=edit')).toBe('/articles/3?tab=edit'));
+    expect(safeReturnTo('/books/3?tab=edit')).toBe('/books/3?tab=edit'));
 });
-describe('media and safe preview', () => {
-  it('never renders executable raw HTML, dangerous links or event handlers', () => {
-    const html = renderToStaticMarkup(
-      createElement(MarkdownPreview, {
-        source:
-          '<script>alert(1)</script>\n<img src=x onerror="alert(2)">\n\n[click](javascript:alert%281%29)\n\n# Safe title',
-      }),
-    );
-    expect(html).not.toContain('<script');
-    expect(html).not.toContain('onerror=');
-    expect(html).not.toContain('href="javascript:');
-    expect(html).toContain('Safe title');
-  });
+describe('media', () => {
   it('validates extension, MIME and size before uploading', () => {
     expect(validateImage(new File(['x'], 'x.svg', { type: 'image/svg+xml' }))).toContain('仅支持');
     expect(

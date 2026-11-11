@@ -71,7 +71,7 @@ function provision(input: {
               const response=await fetch('http://localhost:3000/admin/site-profile',{method:'PATCH',headers:{'Content-Type':'application/json',Origin:'http://localhost:5174',Cookie:(process.env.SESSION_COOKIE_NAME??'vo1d_admin_session')+'='+token},body:JSON.stringify(input.siteProfile)});
               if(response.status!==200)throw new Error('Site profile restoration failed');
             }
-            const allowed=new Set(['articles','photos','books','games','skills','social-links','tags','categories','media']);
+            const allowed=new Set(['photos','books','games','skills','social-links','media']);
             for(const item of [...input.records,...input.mediaIds.map(id=>({resource:'media',id}))]) {
               if(!allowed.has(item.resource)||!Number.isInteger(item.id)||item.id<1) throw new Error('Invalid cleanup target');
               const response=await fetch('http://localhost:3000/admin/'+item.resource+'/'+item.id,{method:'DELETE',headers:{Origin:'http://localhost:5174',Cookie:(process.env.SESSION_COOKIE_NAME??'vo1d_admin_session')+'='+token}});

@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { createLiveAdmin, loginLiveAdmin } from './live-fixture';
 import { tinyPng } from './mock-api';
 import type { Page as ApiPage } from '../../src/api/client';
-import type { Article, Game, Media, SteamGame, SteamStatus } from '../../src/api/types';
+import type { Game, Media, SteamGame, SteamStatus } from '../../src/api/types';
 import { gameInitial } from '../../src/features/games/model';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -111,17 +111,7 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
   const mediaIds: number[] = [];
   const consoleErrors: string[] = [];
   page.on('pageerror', (error) => consoleErrors.push(error.message));
-  const resources = [
-    'articles',
-    'categories',
-    'tags',
-    'books',
-    'games',
-    'photos',
-    'skills',
-    'social-links',
-    'media',
-  ];
+  const resources = ['books', 'games', 'photos', 'skills', 'social-links', 'media'];
   const before: Record<string, number[]> = {};
   async function login() {
     await loginLiveAdmin(page, admin);
@@ -221,73 +211,6 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
     await expect(page.getByRole('status')).toContainText('上传成功');
     expect((await api.get(uploaded.asset.url)).status()).toBe(200);
     await page.getByRole('button', { name: '关闭弹窗' }).click();
-    // Category creation and visibility, then tag through the actual form.
-    await page.goto('/categories/new');
-    await page.getByLabel('分类名称', { exact: true }).fill(prefix);
-    await page.getByLabel('分类标识', { exact: true }).fill(prefix);
-    const category = await trackUiCreate('categories', () =>
-      page.getByRole('button', { name: '创建并保存' }).click(),
-    );
-    await expect(page).toHaveURL(`/categories/${category.id}`);
-    await page.goto('/tags/new');
-    await page.getByLabel('标签名称', { exact: true }).fill(prefix);
-    await page.getByLabel('slug', { exact: true }).fill(prefix);
-    const tag = await trackUiCreate('tags', () =>
-      page.getByRole('button', { name: '创建并保存' }).click(),
-    );
-    await expect(page).toHaveURL(`/tags/${tag.id}`);
-    await page.goto('/articles/new');
-    await page.getByLabel('标题', { exact: true }).fill(prefix);
-    await page.getByLabel('slug', { exact: true }).fill(prefix);
-    await page.getByLabel('摘要', { exact: true }).fill('真实联调临时文章');
-    await page
-      .getByLabel('Markdown 正文')
-      .fill('# 验证标题\n\n真实后端保存。\n<script>window.hacked=1</script>');
-    await page.getByLabel('分类', { exact: true }).selectOption(String(category.id));
-    await page.getByLabel(prefix, { exact: true }).check();
-    await page.getByRole('button', { name: '选择封面' }).click();
-    await page.getByRole('button', { name: `选择素材 ${uploaded.asset.id}`, exact: true }).click();
-    const article = await trackUiCreate('articles', () =>
-      page.getByRole('button', { name: '创建并保存' }).click(),
-    );
-    await expect(page).toHaveURL(`/articles/${article.id}`);
-    expect((await api.get(`${base}/articles/${prefix}`)).status()).toBe(404);
-    const articleBody = (await (
-      await api.get(`${base}/admin/articles/${article.id}`)
-    ).json()) as Article;
-    expect(articleBody.bodyMarkdown).toContain('# 验证标题');
-    expect(articleBody).not.toHaveProperty('contentHtml');
-    const refDelete = await api.delete(`${base}/admin/media/${uploaded.asset.id}`, {
-      headers: origin,
-    });
-    expect(refDelete.status()).toBe(409);
-    expect(
-      (await api.delete(`${base}/admin/categories/${category.id}`, { headers: origin })).status(),
-    ).toBe(409);
-    await page.getByLabel('文章状态').selectOption('PUBLISHED');
-    await page.getByLabel('发布时间', { exact: true }).fill('2026-01-01T12:00');
-    await page.getByRole('button', { name: '保存更改' }).click();
-    await expect(page.getByRole('status')).toContainText('保存成功');
-    const publicArticle = await api.get(`${base}/articles/${prefix}`);
-    expect(publicArticle.status()).toBe(200);
-    expect(((await publicArticle.json()) as { contentHtml: string }).contentHtml).not.toContain(
-      '<script',
-    );
-    // A conflicting slug fails and retains the entered title.
-    await page.goto('/articles/new');
-    await page.getByLabel('标题', { exact: true }).fill(`${prefix}-conflict`);
-    await page.getByLabel('slug', { exact: true }).fill(prefix);
-    await page.getByLabel('摘要', { exact: true }).fill('冲突测试');
-    await page.getByLabel('Markdown 正文').fill('# Test');
-    await page.getByLabel('分类', { exact: true }).selectOption(String(category.id));
-    await page.getByRole('button', { name: '选择封面' }).click();
-    await page.getByRole('button', { name: `选择素材 ${uploaded.asset.id}`, exact: true }).click();
-    await page.getByRole('button', { name: '创建并保存' }).click();
-    await expect(page.getByRole('alert')).toContainText('冲突');
-    await expect(page.getByLabel('标题', { exact: true })).toHaveValue(`${prefix}-conflict`);
-    // Navigate through the unsaved guard, not by accepting an accidental browser unload.
-    await page.getByRole('link', { name: '游戏', exact: true }).click();
-    await page.getByRole('dialog').getByRole('button', { name: '确认', exact: true }).click();
     // Temporary game edits; original games are never modified.
     const testGame = await create('games', {
       title: prefix,
@@ -298,6 +221,10 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
       isVisible: false,
       sortOrder: 1000000,
     });
+    const refDelete = await api.delete(`${base}/admin/media/${uploaded.asset.id}`, {
+      headers: origin,
+    });
+    expect(refDelete.status()).toBe(409);
     await page.goto(`/games/${testGame.id}`);
     await expect(page.getByLabel('自定义时长（小时）')).toHaveValue('7');
     await page.getByLabel('自定义时长（小时）').fill('0');
@@ -406,8 +333,6 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
     });
     // Read every production-backed page and load selectors beyond the first 50 entries.
     for (const resource of [
-      'categories',
-      'tags',
       'books',
       'games',
       'photos',
@@ -474,14 +399,11 @@ test('真实后端：认证、完整管理读写、图片与照片、Steam 关�
   } finally {
     // Dependency-aware cleanup, restricted to explicit IDs created in this test.
     const priority: Record<string, number> = {
-      articles: 0,
       photos: 0,
       books: 0,
       games: 0,
       skills: 0,
       'social-links': 0,
-      tags: 1,
-      categories: 2,
     };
     records.sort((a, b) => (priority[a.resource] ?? 0) - (priority[b.resource] ?? 0));
     try {

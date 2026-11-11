@@ -160,211 +160,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/articles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ArticlesController_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/articles/{slugOrId}/related": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ArticlesController_related"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/articles/{slugOrId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ArticlesController_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/articles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AdminArticlesController_list"];
-        put?: never;
-        post: operations["AdminArticlesController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/articles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AdminArticlesController_get"];
-        put?: never;
-        post?: never;
-        delete: operations["AdminArticlesController_delete"];
-        options?: never;
-        head?: never;
-        patch: operations["AdminArticlesController_update"];
-        trace?: never;
-    };
-    "/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List visible article categories */
-        get: operations["CategoriesController_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all categories for administration */
-        get: operations["AdminCategoriesController_list"];
-        put?: never;
-        /** Create a category */
-        post: operations["AdminCategoriesController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/categories/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a category by id */
-        get: operations["AdminCategoriesController_get"];
-        put?: never;
-        post?: never;
-        /** Delete an unused category */
-        delete: operations["AdminCategoriesController_delete"];
-        options?: never;
-        head?: never;
-        /** Update a category */
-        patch: operations["AdminCategoriesController_update"];
-        trace?: never;
-    };
-    "/admin/categories/reorder": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update category sort positions in one transaction */
-        patch: operations["AdminCategoriesController_reorder"];
-        trace?: never;
-    };
-    "/tags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List tags used by currently published articles */
-        get: operations["TagsController_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/tags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all tags for administration */
-        get: operations["AdminTagsController_list"];
-        put?: never;
-        /** Create a tag */
-        post: operations["AdminTagsController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/tags/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a tag by id */
-        get: operations["AdminTagsController_get"];
-        put?: never;
-        post?: never;
-        /** Delete a tag and its article associations */
-        delete: operations["AdminTagsController_delete"];
-        options?: never;
-        head?: never;
-        /** Update a tag */
-        patch: operations["AdminTagsController_update"];
-        trace?: never;
-    };
     "/books": {
         parameters: {
             query?: never;
@@ -803,6 +598,22 @@ export interface paths {
         patch: operations["AdminSocialLinksController_reorder"];
         trace?: never;
     };
+    "/creations/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CreationsController_layout"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/creations": {
         parameters: {
             query?: never;
@@ -812,6 +623,22 @@ export interface paths {
         };
         get: operations["CreationsController_feed"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/creations/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminCreationsController_layout"];
+        put: operations["AdminCreationsController_saveLayout"];
         post?: never;
         delete?: never;
         options?: never;
@@ -975,221 +802,6 @@ export interface components {
             /** Format: date-time */
             timestamp: string;
         };
-        ArticleCategoryDto: {
-            id: number;
-            /** @example backend */
-            key: string;
-            /** @example Backend */
-            label: string;
-            /** @example Server */
-            iconKey?: Record<string, never> | null;
-        };
-        ArticleTagDto: {
-            id: number;
-            /** @example typescript */
-            slug: string;
-            /** @example TypeScript */
-            name: string;
-        };
-        ArticleSummaryDto: {
-            id: number;
-            slug: string;
-            title: string;
-            summary: string;
-            category: components["schemas"]["ArticleCategoryDto"];
-            tags: components["schemas"]["ArticleTagDto"][];
-            /** Format: date-time */
-            publishedAt: string;
-            cover: components["schemas"]["MediaResponseDto"];
-            readingTimeMinutes: number;
-        };
-        ArticlePageResponseDto: {
-            page: number;
-            pageSize: number;
-            total: number;
-            totalPages: number;
-            items: components["schemas"]["ArticleSummaryDto"][];
-        };
-        TocItemDto: {
-            id: string;
-            text: string;
-            level: number;
-        };
-        ArticleDetailDto: {
-            id: number;
-            slug: string;
-            title: string;
-            summary: string;
-            category: components["schemas"]["ArticleCategoryDto"];
-            tags: components["schemas"]["ArticleTagDto"][];
-            /** Format: date-time */
-            publishedAt: string;
-            cover: components["schemas"]["MediaResponseDto"];
-            readingTimeMinutes: number;
-            /** @description Sanitized HTML; raw HTML in Markdown is escaped */
-            contentHtml: string;
-            toc: components["schemas"]["TocItemDto"][];
-            seoTitle: string | null;
-            seoDescription: string | null;
-        };
-        CategoryResponseDto: {
-            id: number;
-            /** @example backend */
-            key: string;
-            /** @example Backend */
-            label: string;
-            /** @example Server */
-            iconKey?: Record<string, never> | null;
-            sortOrder: number;
-            isVisible: boolean;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        TagResponseDto: {
-            id: number;
-            /** @example typescript */
-            slug: string;
-            /** @example TypeScript */
-            name: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        AdminArticleDto: {
-            id: number;
-            slug: string;
-            title: string;
-            summary: string;
-            cover: components["schemas"]["MediaResponseDto"];
-            readingTimeMinutes: number;
-            /** Format: date-time */
-            publishedAt: string | null;
-            bodyMarkdown: string;
-            categoryId: number;
-            category: components["schemas"]["CategoryResponseDto"];
-            tags: components["schemas"]["TagResponseDto"][];
-            tagIds: number[];
-            coverMediaId: number;
-            /** @enum {string} */
-            status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-            seoTitle: string | null;
-            seoDescription: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        AdminArticlePageDto: {
-            page: number;
-            pageSize: number;
-            total: number;
-            totalPages: number;
-            items: components["schemas"]["AdminArticleDto"][];
-        };
-        CreateArticleDto: {
-            /** @example typescript-type-system-2 */
-            slug: string;
-            title: string;
-            summary: string;
-            /** @description Trusted article source in Markdown, never returned publicly */
-            bodyMarkdown: string;
-            categoryId: number;
-            coverMediaId: number;
-            /**
-             * @default DRAFT
-             * @enum {string}
-             */
-            status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-            /** Format: date-time */
-            publishedAt?: Record<string, never> | null;
-            readingTimeMinutes: number;
-            seoTitle?: Record<string, never> | null;
-            seoDescription?: Record<string, never> | null;
-            /** @default [] */
-            tagIds: number[];
-        };
-        UpdateArticleDto: {
-            /** @example typescript-type-system-2 */
-            slug?: string;
-            title?: string;
-            summary?: string;
-            /** @description Trusted article source in Markdown, never returned publicly */
-            bodyMarkdown?: string;
-            categoryId?: number;
-            coverMediaId?: number;
-            /**
-             * @default DRAFT
-             * @enum {string}
-             */
-            status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-            /** Format: date-time */
-            publishedAt?: Record<string, never> | null;
-            readingTimeMinutes?: number;
-            seoTitle?: Record<string, never> | null;
-            seoDescription?: Record<string, never> | null;
-            /** @default [] */
-            tagIds: number[];
-        };
-        CategoryPageResponseDto: {
-            items: components["schemas"]["CategoryResponseDto"][];
-            page: number;
-            pageSize: number;
-            total: number;
-            totalPages: number;
-        };
-        CreateCategoryDto: {
-            /** @example backend */
-            key: string;
-            /** @example Backend */
-            label: string;
-            /** @example Server */
-            iconKey?: Record<string, never> | null;
-            /** @default 0 */
-            sortOrder: number;
-            /** @default true */
-            isVisible: boolean;
-        };
-        ReorderItemDto: {
-            id: number;
-            sortOrder: number;
-        };
-        ReorderDto: {
-            items: components["schemas"]["ReorderItemDto"][];
-        };
-        UpdateCategoryDto: {
-            /** @example backend */
-            key?: string;
-            /** @example Backend */
-            label?: string;
-            /** @example Server */
-            iconKey?: Record<string, never> | null;
-            /** @default 0 */
-            sortOrder: number;
-            /** @default true */
-            isVisible: boolean;
-        };
-        TagPageResponseDto: {
-            items: components["schemas"]["TagResponseDto"][];
-            page: number;
-            pageSize: number;
-            total: number;
-            totalPages: number;
-        };
-        CreateTagDto: {
-            /** @example typescript */
-            slug: string;
-            /** @example TypeScript */
-            name: string;
-        };
-        UpdateTagDto: {
-            /** @example typescript */
-            slug?: string;
-            /** @example TypeScript */
-            name?: string;
-        };
         BookMediaResponseDto: {
             id: number;
             /** Format: uri */
@@ -1236,6 +848,13 @@ export interface components {
             pageSize: number;
             total: number;
             totalPages: number;
+        };
+        ReorderItemDto: {
+            id: number;
+            sortOrder: number;
+        };
+        ReorderDto: {
+            items: components["schemas"]["ReorderItemDto"][];
         };
         CreateBookDto: {
             title: string;
@@ -1899,680 +1518,6 @@ export interface operations {
             };
             /** @description PostgreSQL is unavailable */
             503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ArticlesController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-                /** @description Category key */
-                category?: string;
-                /** @description Tag slug */
-                tag?: string;
-                /** @description Case-insensitive title and summary search */
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ArticlePageResponseDto"];
-                };
-            };
-        };
-    };
-    ArticlesController_related: {
-        parameters: {
-            query?: {
-                limit?: components["schemas"]["Object"];
-            };
-            header?: never;
-            path: {
-                slugOrId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Related articles; page=1 and pageSize=limit */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ArticlePageResponseDto"];
-                };
-            };
-            /** @description Published article not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ArticlesController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slugOrId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ArticleDetailDto"];
-                };
-            };
-            /** @description Published article not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminArticlesController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-                /** @description Category key */
-                category?: string;
-                /** @description Tag slug */
-                tag?: string;
-                /** @description Case-insensitive title and summary search */
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminArticlePageDto"];
-                };
-            };
-        };
-    };
-    AdminArticlesController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateArticleDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminArticleDto"];
-                };
-            };
-            /** @description Slug already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminArticlesController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminArticleDto"];
-                };
-            };
-        };
-    };
-    AdminArticlesController_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Article deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminArticlesController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateArticleDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminArticleDto"];
-                };
-            };
-            /** @description Slug already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    CategoriesController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CategoryPageResponseDto"];
-                };
-            };
-        };
-    };
-    AdminCategoriesController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CategoryPageResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminCategoriesController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateCategoryDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CategoryResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The category key already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminCategoriesController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CategoryResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Category not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminCategoriesController_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Category deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Category not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The category is referenced by an article */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminCategoriesController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateCategoryDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CategoryResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Category not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The category key already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminCategoriesController_reorder: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReorderDto"];
-            };
-        };
-        responses: {
-            /** @description Display positions updated atomically */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The reorder payload is invalid */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description A category id was not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TagsController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TagPageResponseDto"];
-                };
-            };
-        };
-    };
-    AdminTagsController_list: {
-        parameters: {
-            query?: {
-                page?: components["schemas"]["Object"];
-                pageSize?: components["schemas"]["Object"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TagPageResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminTagsController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateTagDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TagResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The tag slug or name already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminTagsController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TagResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Tag not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminTagsController_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Tag deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Tag not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminTagsController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateTagDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TagResponseDto"];
-                };
-            };
-            /** @description Administrator session is missing or expired */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Tag not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The tag slug or name already exists */
-            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3901,12 +2846,63 @@ export interface operations {
             };
         };
     };
+    CreationsController_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     CreationsController_feed: {
         parameters: {
             query?: {
                 page?: components["schemas"]["Object"];
                 pageSize?: components["schemas"]["Object"];
             };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCreationsController_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCreationsController_saveLayout: {
+        parameters: {
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;

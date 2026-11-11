@@ -9,7 +9,7 @@
 | 博客、后台、后端源码与依赖锁文件             | 三个项目目录                                              | 是                       |
 | 环境配置模板                                 | 各项目 `.env.example`                                     | 是，只有占位值及公开地址 |
 | 后端真实密钥、数据库密码、Steam 账号配置     | 后端 `.env`                                               | 否，单独保管             |
-| 文章、后台编辑、管理员、媒体引用、Steam 快照 | PostgreSQL 数据卷                                         | 否，单独备份及迁移       |
+| 内容、后台编辑、管理员、媒体引用、Steam 快照 | PostgreSQL 数据卷                                         | 否，单独备份及迁移       |
 | 后台上传的图片和图标                         | MinIO 数据卷                                              | 否，单独备份及迁移       |
 | 验收原始记录、截图、浏览器登录数据           | `docs/*verification.json`、`docs/screenshots/`、`tmp/` 等 | 否                       |
 | 依赖、构建产物、日志、本地工具缓存           | `node_modules/`、`dist/`、日志等                          | 否                       |
@@ -84,7 +84,7 @@ Gitee 用来保存和拉取源码。后端 Node.js 进程、PostgreSQL 和媒体
 1. 创建 Linux 服务器，安装 Git、Docker Engine 与 Compose 插件。若服务器直接构建前端，还需按项目 `.node-version` 安装 Node.js 24.20.0、pnpm 10.23.0；分别核对 `node --version` 与 `pnpm exec node --version`。
 2. 将博客、后台、接口域名解析到服务器公网地址；媒体域名根据 MinIO 或托管对象存储的配置设置。开放网站的 80/443 端口，SSH（Secure Shell，安全外壳）管理端口限制来源。数据库、MinIO 控制台及后端内部端口不直接公开。
 3. 拉取三个仓库，单独在服务器创建后端 `.env`。生成新的生产数据库密码、存储凭据与 `IP_HASH_SECRET`，不要沿用开发密码；真实配置不提交仓库。
-4. 在本机暂停后台写入与自动同步后，取得一致的 PostgreSQL 逻辑备份和 MinIO 对象备份，私下传到服务器。在新建的目标数据库和媒体存储恢复，保留媒体对象键。核对文章、管理员、媒体引用与对象数量，抽样检查图片。备份含隐私，必须存放在仓库之外。**不要运行 `docker compose down -v`，也不要删除本机数据卷。**
+4. 在本机暂停后台写入与自动同步后，取得一致的 PostgreSQL 逻辑备份和 MinIO 对象备份，私下传到服务器。在新建的目标数据库和媒体存储恢复，保留媒体对象键。核对内容记录、管理员、媒体引用与对象数量，抽样检查图片。备份含隐私，必须存放在仓库之外。**不要运行 `docker compose down -v`，也不要删除本机数据卷。**
 5. 根据部署拓扑准备生产 Compose 配置：沿用后端 Dockerfile，设置生产变量、健康检查、持久卷和私有网络。现有 `docker-compose.yml` 是本地集成配置，含测试库、开发来源及 MinIO 根账号初始化，不能不加调整就认定是生产配置。生产应用使用仅限媒体 bucket 必要权限的存储账号。
 6. 在后端对应版本的构建/迁移环境执行 `pnpm prisma:migrate:deploy`，再启动后端。若通过 Docker 运行迁移，可使用 Dockerfile 的 `migration` 构建阶段；最终 `runtime` 镜像不含完整迁移工具。已恢复的管理员直接使用，只有空库才需要 `pnpm admin:create`；维护脚本应在有完整工具的环境运行。
 7. 两个前端分别设置生产接口地址后构建，将各自 `dist/` 放入独立静态站点目录。用 Nginx 或 Caddy 分发静态文件、代理接口、配置 HTTPS（Hypertext Transfer Protocol Secure，安全超文本传输协议）。Caddy 可自动申请和续期证书，前提是域名解析和网络条件正确，见[官方说明](https://caddyserver.com/docs/automatic-https)。静态站点根目录只能指向 `dist/`，不要指向包含 `.env` 的项目根目录。
@@ -118,9 +118,9 @@ MEDIA_PUBLIC_BASE_URL=https://media.example.com
 ```
 
 - 后台与接口使用同一主域名下的 HTTPS 子域名，以符合已有 `SameSite=Lax` Cookie 会话方案。`FRONTEND_ORIGINS` 必须是精确来源，不带末尾斜杠、路径或通配符；启用 `www` 时也要添加实际来源。
-- 接口路径是 `/articles`、`/auth/login` 等根路径。代理时保留原路径，不凭空增加 `/api` 或 `/v1`。
+- 接口路径是 `/books`、`/auth/login` 等根路径。代理时保留原路径，不凭空增加 `/api` 或 `/v1`。
 - 只在一个可信反向代理后、且代理覆盖客户端伪造的转发头时设置 `TRUST_PROXY=true`。代理请求大小限制要容纳默认 10 MB 图片以及上传表单开销，例如设置为 12 MB。
-- 博客 `/blog/123`、后台 `/articles/123` 等深层路径需要回退到对应 `index.html`，见[后台静态部署示例](deployment.md)。
+- 后台 `/books/123` 等深层路径需要回退到对应 `index.html`，见[后台静态部署示例](deployment.md)。
 - 迁移媒体保留对象键，后端通过 `MEDIA_PUBLIC_BASE_URL` 拼接新地址。该变量应指向“对象键之前”的完整公开前缀；例如代理 MinIO 路径不改写时可能需要 `https://media.example.com/桶名`。S3 接口地址与公开图片地址职责不同。
 - 图片读取要允许博客来源的 CORS（Cross-Origin Resource Sharing，跨源资源共享），否则可能出现图片能显示、封面取色却失败的情况。
 - Steam 密钥只配后端，并从目标服务器实际验证上游连通性。开发机代理地址不可直接搬到服务器。
@@ -129,9 +129,9 @@ MEDIA_PUBLIC_BASE_URL=https://media.example.com
 ## 7. 验收清单
 
 - 三项目 `pnpm build` 成功；本次在 Node.js 24.20.0 下已执行并通过。博客仍有较大 JavaScript 分块提示，属于后续加载性能优化项。
-- `https://api.example.com/health` 返回成功；未登录访问 `/admin/articles` 返回 401。
+- `https://api.example.com/health` 返回成功；未登录访问 `/admin/books` 返回 401。
 - 登录、刷新、退出、会话失效符合预期；Cookie 的 Secure、HttpOnly 和 SameSite 设置正确。
-- 上传新图、修改文章、发布后，博客刷新可见；原有图片与媒体也可读取。
+- 上传新图、修改书籍或动态后，博客刷新可见；原有图片与媒体也可读取。
 - 博客和后台深层链接直接打开、刷新都正常；手机布局与主题正常。
 - 后端公共接口不暴露草稿、管理员资料或凭据；敏感运行记录不进入静态站点目录。
 - 备份同时包含数据库及媒体，测试恢复后仍可正常读取关联资源。

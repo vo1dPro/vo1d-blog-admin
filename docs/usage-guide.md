@@ -6,7 +6,7 @@
 
 根目录 工作区根目录，下设独立的 vo1d-blog、vo1d-blog-api、vo1d-blog-admin。
 
-管理后台通过 /auth 和 /admin 接口使用 Cookie 会话，运行时不直连数据库或对象存储。博客通过 /site-profile、/articles、/categories、/tags、/books、/games、/photos、/skills、/social-links 展示公开内容。公开路径不带 /api 或项目级 /v1。
+管理后台通过 /auth 和 /admin 接口使用 Cookie 会话，运行时不直连数据库或对象存储。博客通过 /site-profile、/creations、/books、/games、/photos、/skills、/social-links 展示公开内容。公开路径不带 /api 或项目级 /v1。
 
 PostgreSQL 保存管理员、业务内容、媒体索引和 Steam 快照；MinIO 保存图片。Steam 密钥及同步逻辑仅在后端。游戏按 steamAppId 聚合分钟后统一取整；展示使用 playtimeHours，自定义值为 manualPlaytimeHours（保留原接口字段名）。自定义时长大于 0 时覆盖 Steam，填 0 使用 Steam；两者不会相加。博客总时长只累计各公开游戏的最终展示时长。
 
