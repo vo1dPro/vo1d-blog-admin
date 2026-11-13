@@ -2,7 +2,7 @@
 
 独立中文内容管理后台，使用 React 19、Vite 8、TypeScript strict。通过现有后端根路径接口管理内容，运行时不访问数据库或对象存储管理接口。
 
-三个项目的职责、启动及数据边界见 [当前使用说明](docs/usage-guide.md)，本次验证见 [2026-09-08 联动记录](docs/current-integration.md)。
+三个项目的职责、启动及数据边界见 [使用说明](docs/usage-guide.md)。
 
 ## 本地运行
 
@@ -73,10 +73,10 @@ public/icons/     兼容图标资源；技能与社交使用后端媒体
 scripts/          OpenAPI 类型生成
 tests/unit/       请求、校验、空值、安全预览等单元测试
 tests/e2e/        浏览器模拟异常测试与真实后端联调
-docs/             契约差异、部署、验收和真实截图
+docs/             使用说明、契约注意点、部署和发布；archive/ 为历史验收记录
 ```
 
-`src/api/generated.ts` 不手改；运行 `pnpm api:generate` 从 `/docs-json` 重新生成，同时保存原始快照。上游可空字段元数据问题在 `src/api/types.ts` 独立适配，见 [契约差异](docs/contract-notes.md)。
+`src/api/generated.ts` 不手改；运行 `pnpm api:generate` 从 `/docs-json` 重新生成，同时保存原始快照。上游可空字段元数据问题在 `src/api/types.ts` 独立适配，见 [契约说明](docs/contract-notes.md)。
 
 ## 依赖选择
 
@@ -104,6 +104,6 @@ pnpm test:e2e
 
 真实测试使用显式创建并记录编号的临时内容、临时管理员和媒体；站点单例测试暂存原字段并在 finally 中通过后端恢复，结束按引用顺序清理，核对原始编号集合和所有已有游戏的可写字段。不会重导入数据、重置已有管理员、触发真实全库同名关联。Steam 同步冷却和全局排序失败在模拟浏览器测试覆盖；真实排序仅提交临时技能或书籍记录。
 
-历史联动结果见 [联动记录](docs/current-integration.md)。静态部署见 [部署说明](docs/deployment.md)，当前启动和数据边界见 [使用说明](docs/usage-guide.md)。
+静态部署见 [部署说明](docs/deployment.md)，启动和数据边界见 [使用说明](docs/usage-guide.md)，接口契约的注意点见 [契约说明](docs/contract-notes.md)。2026-09-08 的历史验收记录归档在 [docs/archive](docs/archive/2026-09-08-integration.md)。
 
-完整浏览器套件还需要博客已运行于 5173；`tests/e2e/integration.live.spec.ts` 验证真实后台到博客的保存、媒体、发布撤回及路由，`blog-states.spec.ts` 为补充故障注入。
+完整浏览器套件还需要博客已运行于 5173；`tests/e2e/integration.live.spec.ts` 验证真实后台到博客的保存、媒体、排序和隐藏，`blog-states.spec.ts` 为补充故障注入。
